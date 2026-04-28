@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rogerinho Ramos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#0a0a0a; --surf:#141414; --gold:#c9a84c; --gold2:#e8c97a;
+      --white:#f0ede8; --muted:#888; --border:#222;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{
+      background:var(--bg);min-height:100vh;
+      font-family:'DM Sans',sans-serif;color:var(--white);
+      display:flex;align-items:center;justify-content:center;
+      padding:48px 20px;position:relative;
+    }
+    body::before{
+      content:'';position:fixed;inset:0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% 0%,rgba(201,168,76,.09) 0%,transparent 60%),
+        radial-gradient(ellipse 50% 40% at 100% 100%,rgba(201,168,76,.04) 0%,transparent 50%);
+      pointer-events:none;
+    }
+    .container{width:100%;max-width:440px;position:relative;z-index:1;}
+
+    /* PERFIL */
+    .perfil{text-align:center;margin-bottom:36px;}
+    .perfil-avatar{
+      width:90px;height:90px;border-radius:50%;
+      border:2px solid var(--gold);background:var(--surf);
+      display:flex;align-items:center;justify-content:center;
+      font-size:42px;margin:0 auto 16px;
+      animation:pulso 3s ease-in-out infinite;
+    }
+    @keyframes pulso{
+      0%,100%{box-shadow:0 0 20px rgba(201,168,76,.15);}
+      50%{box-shadow:0 0 36px rgba(201,168,76,.35);}
+    }
+    .perfil-nome{
+      font-family:'Playfair Display',serif;
+      font-size:26px;font-weight:900;color:var(--gold);margin-bottom:8px;
+    }
+    .perfil-bio{font-size:13px;color:var(--muted);line-height:1.7;}
+    .perfil-bio strong{color:var(--white);}
+    .perfil-tags{
+      display:flex;flex-wrap:wrap;gap:6px;
+      justify-content:center;margin-top:12px;
+    }
+    .tag{
+      padding:3px 10px;border:1px solid rgba(201,168,76,.25);
+      border-radius:20px;font-size:10px;color:var(--gold);
+    }
+    .divider{
+      width:40px;height:1px;
+      background:linear-gradient(90deg,transparent,var(--gold),transparent);
+      margin:20px auto 28px;
+    }
+
+    /* SEÇÃO */
+    .secao{font-size:10px;font-weight:700;letter-spacing:2px;
+      text-transform:uppercase;color:#444;margin-bottom:10px;padding-left:4px;}
+
+    /* LINKS */
+    .links{display:flex;flex-direction:column;gap:10px;margin-bottom:24px;}
+
+    .link-card{
+      display:flex;align-items:center;gap:14px;
+      padding:15px 18px;background:var(--surf);
+      border:1px solid var(--border);border-radius:14px;
+      text-decoration:none;color:var(--white);
+      transition:all .22s ease;position:relative;overflow:hidden;
+    }
+    .link-card::after{
+      content:'→';position:absolute;right:18px;
+      color:#333;font-size:16px;transition:all .22s;
+    }
+    .link-card:hover{
+      border-color:rgba(201,168,76,.35);
+      transform:translateY(-2px);
+      box-shadow:0 8px 20px rgba(0,0,0,.3);
+    }
+    .link-card:hover::after{color:var(--gold);right:14px;}
+    .link-card:active{transform:scale(.98);}
+
+    /* Card destaque CorteFlow */
+    .link-card.destaque{
+      border-color:rgba(201,168,76,.35);
+      background:linear-gradient(135deg,#1a1a0a,#141410);
+    }
+    .link-card.destaque::before{
+      content:'';position:absolute;inset:0;
+      background:linear-gradient(135deg,rgba(201,168,76,.06),transparent);
+    }
+
+    .link-icon{
+      width:44px;height:44px;border-radius:10px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:22px;flex-shrink:0;position:relative;
+    }
+    .link-info{flex:1;min-width:0;}
+    .link-titulo{
+      font-size:14px;font-weight:600;margin-bottom:2px;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    }
+    .link-desc{font-size:11px;color:var(--muted);}
+
+    /* Cores dos ícones */
+    .ic-corteflow{background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.25);}
+    .ic-site     {background:rgba(80,120,255,.12);border:1px solid rgba(80,120,255,.2);}
+    .ic-insta    {background:rgba(225,48,108,.12);border:1px solid rgba(225,48,108,.2);}
+    .ic-whats    {background:rgba(37,211,102,.12);border:1px solid rgba(37,211,102,.2);}
+    .ic-tg       {background:rgba(0,136,204,.12);border:1px solid rgba(0,136,204,.2);}
+    .ic-li       {background:rgba(0,119,181,.12);border:1px solid rgba(0,119,181,.2);}
+    .ic-yt       {background:rgba(255,0,0,.12);border:1px solid rgba(255,0,0,.2);}
+    .ic-igreja   {background:rgba(120,80,200,.12);border:1px solid rgba(120,80,200,.2);}
+
+    /* FOOTER */
+    footer{
+      text-align:center;margin-top:32px;
+      font-size:11px;color:#333;line-height:2;
+    }
+    footer span{color:#555;}
+    footer strong{color:var(--gold);}
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- PERFIL -->
+  <div class="perfil">
+    <div class="perfil-avatar">🤝</div>
+    <div class="perfil-nome">Rogerinho Ramos</div>
+    <div class="perfil-bio">
+      <strong>Líder · Desenvolvedor · Pastor</strong><br>
+      KSB Brasil · IBJP Várzea Paulista · SP
+    </div>
+    <div class="perfil-tags">
+      <div class="tag">Tecnologia</div>
+      <div class="tag">Liderança</div>
+      <div class="tag">Fé</div>
+      <div class="tag">Várzea Paulista</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- CORTEFLOW — DESTAQUE -->
+  <div class="secao">🚀 Meu Produto</div>
+  <div class="links">
+    <a href="https://rogerinhoramos.github.io/corteflow-landing" target="_blank" class="link-card destaque">
+      <div class="link-icon ic-corteflow">✂️</div>
+      <div class="link-info">
+        <div class="link-titulo">CorteFlow</div>
+        <div class="link-desc">Sistema de gestão para barbearias · Beta</div>
+      </div>
+    </a>
+  </div>
+
+  <!-- PESSOAL -->
+  <div class="secao">👤 Perfis Pessoais</div>
+  <div class="links">
+    <a href="https://rogerinhoramos.github.io/MyLifeEssence02/" target="_blank" class="link-card">
+      <div class="link-icon ic-site">🌐</div>
+      <div class="link-info">
+        <div class="link-titulo">Site Pessoal</div>
+        <div class="link-desc">MyLifeEssence — Quem sou, projetos e mais</div>
+      </div>
+    </a>
+    <a href="https://www.instagram.com/rogerinhorcr/" target="_blank" class="link-card">
+      <div class="link-icon ic-insta">📸</div>
+      <div class="link-info">
+        <div class="link-titulo">@rogerinhorcr</div>
+        <div class="link-desc">Instagram pessoal</div>
+      </div>
+    </a>
+    <a href="https://www.youtube.com/@rogerinhoramos" target="_blank" class="link-card">
+      <div class="link-icon ic-yt">▶️</div>
+      <div class="link-info">
+        <div class="link-titulo">YouTube</div>
+        <div class="link-desc">@rogerinhoramos · Canal no YouTube</div>
+      </div>
+    </a>
+    <a href="https://www.linkedin.com/in/rogério-costa-ramos-0aa0aa26/" target="_blank" class="link-card">
+      <div class="link-icon ic-li">💼</div>
+      <div class="link-info">
+        <div class="link-titulo">LinkedIn</div>
+        <div class="link-desc">Rogério Costa Ramos · KSB Brasil</div>
+      </div>
+    </a>
+  </div>
+
+  <!-- CONTATO -->
+  <div class="secao">💬 Contato Direto</div>
+  <div class="links">
+    <a href="https://wa.me/5511999056897?text=Olá+Rogerinho!" target="_blank" class="link-card">
+      <div class="link-icon ic-whats">💬</div>
+      <div class="link-info">
+        <div class="link-titulo">WhatsApp</div>
+        <div class="link-desc">(11) 99905-6897 · Fale comigo</div>
+      </div>
+    </a>
+    <a href="https://t.me/Rogerinho_Ramos" target="_blank" class="link-card">
+      <div class="link-icon ic-tg">✈️</div>
+      <div class="link-info">
+        <div class="link-titulo">Telegram</div>
+        <div class="link-desc">@Rogerinho_Ramos</div>
+      </div>
+    </a>
+  </div>
+
+  <!-- MINISTÉRIO -->
+  <div class="secao">✝️ Ministério</div>
+  <div class="links">
+    <a href="https://www.instagram.com/igrejabatistajdpta/" target="_blank" class="link-card">
+      <div class="link-icon ic-igreja">⛪</div>
+      <div class="link-info">
+        <div class="link-titulo">IBJP</div>
+        <div class="link-desc">Igreja Batista no Jardim Paulista · Várzea Paulista</div>
+      </div>
+    </a>
+    <a href="https://www.instagram.com/pr_rogerinhoramos/" target="_blank" class="link-card">
+      <div class="link-icon ic-insta">📖</div>
+      <div class="link-info">
+        <div class="link-titulo">@pr_rogerinhoramos</div>
+        <div class="link-desc">Instagram do ministério</div>
+      </div>
+    </a>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <strong>✂️ CorteFlow</strong> · <span>rogerinhoramos.github.io/corteflow-landing</span><br>
+    ✝️ <em>"Tudo o que fizerem, façam de todo o coração, como para o Senhor."</em><br>
+    <span>Col 3:23 · Rogerinho Ramos · Várzea Paulista, SP</span>
+  </footer>
+
+</div>
+</body>
+</html>
