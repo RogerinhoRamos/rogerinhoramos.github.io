@@ -12,6 +12,10 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://rogerinhoramos.com.br/renda-fixa.html">
     <meta property="og:locale" content="pt_BR">
+    <meta property="og:image" content="https://rogerinhoramos.com.br/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Comparador Renda Fixa | Rogerinho Ramos">
+    <meta name="twitter:description" content="Compare Tesouro Direto, CDB, LCI e LCA: rentabilidade líquida, IR e retorno equivalente antes de investir.">
     <!-- Dados estruturados (JSON-LD) para mecanismos de busca -->
     <script type="application/ld+json">
     {
@@ -462,15 +466,12 @@
             
             <div class="header-nav">
                 <button class="tab-btn active" onclick="showTab('simulador')">
-                    <i class="fas fa-calculator"></i>
                     Simulador
                 </button>
                 <button class="tab-btn" onclick="showTab('dashboard')">
-                    <i class="fas fa-chart-bar"></i>
                     Dashboard
                 </button>
                 <button class="tab-btn" onclick="showTab('tools')">
-                    <i class="fas fa-tools"></i>
                     Ferramentas
                 </button>
             </div>
@@ -483,6 +484,7 @@
     </header>
 
     <div class="container">
+        <h1 style="font-size: 1.8rem; margin: 0 0 2rem; color: var(--primary);">Comparador Renda Fixa</h1>
         <!-- Simulador Tab -->
         <div id="tab-simulador" class="tab-content">
             <div class="card">
@@ -1066,6 +1068,7 @@
 
 
         function showTab(tabName) {
+            if (typeof gtag === 'function') { gtag('event', 'renda_fixa_aba', { aba: tabName }); }
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.add('hidden');
             });

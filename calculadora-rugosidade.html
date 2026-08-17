@@ -20,6 +20,10 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://rogerinhoramos.com.br/calculadora-rugosidade.html">
     <meta property="og:locale" content="pt_BR">
+    <meta property="og:image" content="https://rogerinhoramos.com.br/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Calculadora de Rugosidade | Rogerinho Ramos">
+    <meta name="twitter:description" content="Calculadora de rugosidade superficial (Ra) e avanço (f) — fórmulas teórica padrão e adaptada. Ferramenta técnica de usinagem por Rogerinho Ramos.">
     <!-- Dados estruturados (JSON-LD) para mecanismos de busca -->
     <script type="application/ld+json">
     {
@@ -142,7 +146,7 @@
 
     <main>
     <section class="section" id="calculator">
-        <h2 class="section-title">Calculadora de Rugosidade Superficial</h2>
+        <h1 class="section-title">Calculadora de Rugosidade Superficial</h1>
         <p class="section-subtitle">Use esta ferramenta para calcular a rugosidade superficial teórica, tanto pela fórmula padrão quanto pela adaptada.</p>
         <div class="calculator-container" style="
             max-width: 800px; margin: auto; background: rgba(255,255,255,0.05);
@@ -215,6 +219,7 @@
 
         function setMode(newMode) {
             mode = newMode;
+            if (typeof gtag === 'function') { gtag('event', 'calculadora_modo', { modo: newMode }); }
             if (mode === 'ra') {
                 inputRa.disabled = true;
                 inputFeed.disabled = false;
