@@ -1,0 +1,1736 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparador Renda Fixa | RR Rogerinho Ramos</title>
+    <meta name="description" content="Comparador de investimentos em renda fixa: CDB, LCI, LCA e Tesouro Direto. Compare a rentabilidade líquida. Por Rogerinho Ramos.">
+
+    <!-- Google Analytics 4: substitua G-XXXXXXXXXX pelo ID da sua propriedade -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX');
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #00d4ff;
+            --secondary: #ff6b35;
+            --purple: #8b5cf6;
+            --green: #10b981;
+            --gold: #fbbf24;
+            --dark: #0a0a0a;
+            --gray: #1a1a1a;
+            --light-gray: #2a2a2a;
+            --white: #ffffff;
+            --text-light: #b0b0b0;
+            --poupanca: #ff9800;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--dark) 0%, var(--gray) 100%);
+            color: var(--white);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.5rem 5%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .header-nav .tab-btn {
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+        }
+
+        .logo-rr {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-nome {
+            font-size: 1.6rem;
+            font-weight: 500;
+            font-family: 'Brush Script MT', cursive;
+            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 1px 1px 2px rgba(0, 212, 255, 0.3);
+            position: relative;
+            transform: rotate(-1deg);
+        }
+
+        .logo-nome::before {
+            content: '✦';
+            position: absolute;
+            left: -14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+            animation: twinkle 2s infinite;
+        }
+
+        .logo-nome::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 5%;
+            width: 90%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), var(--secondary), transparent);
+            border-radius: 1px;
+            opacity: 0.7;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 1; transform: translateY(-50%) scale(1); color: var(--primary); }
+            25% { opacity: 0.4; transform: translateY(-50%) scale(1.2); color: var(--secondary); }
+            50% { opacity: 0.7; transform: translateY(-50%) scale(1.1); color: var(--gold); }
+            75% { opacity: 1; transform: translateY(-50%) scale(1); color: var(--accent); }
+        }
+
+        .logo:hover .logo-nome {
+            transform: rotate(-1deg) scale(1.05);
+        }
+
+        .logo:hover .logo-rr {
+            transform: scale(1.05);
+        }
+
+        .back-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            transform: translateX(-5px);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 5%;
+        }
+
+        .tab-btn {
+            padding: 1rem 2rem;
+            background: transparent;
+            color: var(--white);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(45deg, var(--primary), var(--purple));
+            border-color: transparent;
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: var(--white);
+            font-size: 1rem;
+        }
+
+        .input-group select {
+            cursor: pointer;
+            color-scheme: dark;
+        }
+
+        .input-group select option {
+            background: #1a1a1a;
+            color: #ffffff;
+            padding: 0.5rem;
+        }
+
+        .stat-card {
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .stat-card .value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-card {
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 2px solid;
+        }
+
+        .result-card h4 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .result-item {
+            margin-bottom: 0.8rem;
+        }
+
+        .result-item .label {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .result-item .value {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .roi-indicator {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid var(--green);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .roi-indicator .break-even {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--green);
+            margin-bottom: 0.5rem;
+        }
+
+        .vs-poupanca {
+            background: rgba(255, 152, 0, 0.15);
+            border: 1px solid var(--poupanca);
+            border-radius: 10px;
+            padding: 0.8rem;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .vs-poupanca .gain {
+            color: var(--green);
+            font-weight: bold;
+        }
+
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-label:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .checkbox-label.checked {
+            border-color: var(--primary);
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .mode-toggle {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .mode-toggle button {
+            flex: 1;
+            padding: 0.8rem;
+            background: transparent;
+            color: var(--white);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .mode-toggle button.active {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 2rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        th {
+            font-weight: 600;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+        }
+
+        .warning-box {
+            padding: 1rem;
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px solid var(--gold);
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+
+        .comparison-highlight {
+            background: rgba(255, 152, 0, 0.1);
+            border: 2px solid var(--poupanca);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .comparison-highlight h3 {
+            color: var(--poupanca);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .comparison-item {
+            text-align: center;
+        }
+
+        .comparison-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="index.html" class="logo">
+                <span class="logo-rr">RR</span>
+                <span class="logo-nome">Rogerinho Ramos</span>
+            </a>
+            
+            <div class="header-nav">
+                <button class="tab-btn active" onclick="showTab('simulador')">
+                    <i class="fas fa-calculator"></i>
+                    Simulador
+                </button>
+                <button class="tab-btn" onclick="showTab('dashboard')">
+                    <i class="fas fa-chart-bar"></i>
+                    Dashboard
+                </button>
+                <button class="tab-btn" onclick="showTab('tools')">
+                    <i class="fas fa-tools"></i>
+                    Ferramentas
+                </button>
+            </div>
+
+            <a href="index.html" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Voltar
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Simulador Tab -->
+        <div id="tab-simulador" class="tab-content">
+            <div class="card">
+                <h2 style="font-size: 1.8rem; margin-bottom: 2rem; color: var(--primary);">
+                    <i class="fas fa-calculator"></i> Simulador Completo
+                </h2>
+
+                <div class="grid grid-2">
+                    <div class="input-group">
+                        <label>O que você quer fazer?</label>
+                        <div class="mode-toggle">
+                            <button class="active" onclick="setCalculationMode('simulate')">Simular Retorno</button>
+                            <button onclick="setCalculationMode('goal')">Calcular Aporte</button>
+                        </div>
+                        <p style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.5rem;" id="modeDescription">
+                            Veja quanto seu dinheiro vai render
+                        </p>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Tipo de Investimento</label>
+                        <div class="mode-toggle">
+                            <button class="active" onclick="setMode('single')">Único</button>
+                            <button onclick="setMode('recurring')">Recorrente</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modo Simulação -->
+                <div id="simulateMode" class="grid grid-2">
+                    <div class="input-group">
+                        <label>Valor Inicial (R$)</label>
+                        <input type="number" id="initialAmount" value="10000" oninput="updateSimulation()">
+                    </div>
+
+                    <div class="input-group" id="monthlyGroup" style="display: none;">
+                        <label>Aporte Mensal (R$)</label>
+                        <input type="number" id="monthlyAmount" value="500" oninput="updateSimulation()">
+                    </div>
+
+                    <div class="input-group">
+                        <label>
+                            Período: <span id="periodLabel">12</span> meses 
+                            (<span id="periodYears">1.0</span> anos)
+                        </label>
+                        <input type="range" id="period" min="1" max="360" value="12" 
+                               oninput="updatePeriodLabel(); updateSimulation()">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-light); margin-top: 0.3rem;">
+                            <span>1 mês</span>
+                            <span>30 anos</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modo Meta -->
+                <div id="goalMode" class="grid grid-2" style="display: none;">
+                    <div class="input-group">
+                        <label>Quanto você quer ter? (R$)</label>
+                        <input type="number" id="goalAmount" value="100000" oninput="calculateGoalAport()">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Valor Inicial (R$)</label>
+                        <input type="number" id="goalInitialAmount" value="0" oninput="calculateGoalAport()">
+                        <p style="font-size: 0.8rem; color: var(--text-light); margin-top: 0.3rem;">
+                            Quanto você já tem para começar
+                        </p>
+                    </div>
+
+                    <div class="input-group">
+                        <label>
+                            Em quanto tempo? <span id="goalPeriodLabel">120</span> meses 
+                            (<span id="goalPeriodYears">10.0</span> anos)
+                        </label>
+                        <input type="range" id="goalPeriod" min="1" max="360" value="120" 
+                               oninput="updateGoalPeriodLabel(); calculateGoalAport()">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-light); margin-top: 0.3rem;">
+                            <span>1 mês</span>
+                            <span>30 anos</span>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Qual investimento?</label>
+                        <select id="goalInvestment" onchange="calculateGoalAport()">
+                            <!-- Preenchido via JS -->
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Resultado da Meta -->
+                <div id="goalResult" style="display: none; padding: 2rem; background: linear-gradient(135deg, var(--green), var(--gold)); border-radius: 15px; text-align: center; margin-top: 1rem;">
+                    <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Aporte Necessário</h3>
+                    <div style="font-size: 3rem; font-weight: bold; margin-bottom: 0.5rem;" id="goalResultAmount">
+                        R$ 0,00
+                    </div>
+                    <p style="font-size: 1rem; opacity: 0.9;" id="goalResultText">por mês</p>
+                </div>
+
+                <div id="simulateOptions">
+                    <div class="input-group" style="margin-top: 1rem;">
+                        <label style="font-size: 1.1rem; margin-bottom: 1rem;">
+                            Selecione os investimentos para comparar (até 4):
+                        </label>
+                        <div class="checkbox-grid" id="investmentCheckboxes">
+                            <!-- Preenchido via JS -->
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input type="checkbox" id="showPoupanca" checked onchange="updateSimulation()" style="accent-color: var(--poupanca);">
+                            <span>Comparar com Poupança (linha de base)</span>
+                        </label>
+                        <p style="font-size: 0.8rem; color: var(--text-light); margin-left: 1.5rem; margin-top: 0.3rem;">
+                            Taxa atual: 6.17% a.a. (ajustada automaticamente pela Selic)
+                        </p>
+                    </div>
+
+                    <div class="input-group">
+                        <label style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input type="checkbox" id="showInflation" checked onchange="updateSimulation()" style="accent-color: var(--gold);">
+                            <span>Mostrar valores reais (descontando inflação)</span>
+                        </label>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; margin-left: 1.5rem;">
+                            <label style="color: var(--text-light);">Taxa de inflação:</label>
+                            <input 
+                                type="number" 
+                                id="inflationRate" 
+                                value="4.5" 
+                                step="0.1"
+                                min="0"
+                                max="20"
+                                oninput="updateSimulation()"
+                                style="
+                                    width: 80px;
+                                    padding: 0.5rem;
+                                    background: rgba(255, 255, 255, 0.1);
+                                    border: 1px solid rgba(255, 255, 255, 0.2);
+                                    border-radius: 8px;
+                                    color: var(--white);
+                                    font-size: 1rem;
+                                    font-weight: bold;
+                                "
+                            >
+                            <span style="color: var(--gold); font-weight: 600;">% a.a.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comparação com Poupança Destacada -->
+            <div class="comparison-highlight" id="poupancaComparison" style="display: none;">
+                <h3><i class="fas fa-piggy-bank"></i> Comparação com a Poupança</h3>
+                <div class="comparison-grid" id="poupancaComparisonGrid">
+                    <!-- Preenchido via JS -->
+                </div>
+            </div>
+
+            <div class="card" id="chartCard">
+                <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem;">Evolução do Investimento</h3>
+                <div class="chart-container">
+                    <canvas id="lineChart"></canvas>
+                </div>
+            </div>
+
+            <div class="grid grid-3" id="resultsGrid">
+                <!-- Preenchido via JS -->
+            </div>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="tab-dashboard" class="tab-content hidden">
+            <div class="grid grid-3">
+                <div class="stat-card" style="background: linear-gradient(135deg, var(--primary), var(--purple));">
+                    <div class="value">6</div>
+                    <div>Tipos de Investimento</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, var(--green), var(--gold));">
+                    <div class="value">FGC</div>
+                    <div>Garantia R$ 250 mil</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, var(--purple), var(--secondary));">
+                    <div class="value">15%</div>
+                    <div>IR mínimo (720+ dias)</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--primary);">
+                    Comparativo de Rentabilidade (12 meses, R$ 10.000)
+                </h3>
+                <div class="chart-container">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem;">Comparativo Detalhado</h3>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Investimento</th>
+                                <th>Taxa a.a.</th>
+                                <th>IR</th>
+                                <th>Liquidez</th>
+                                <th>Risco</th>
+                                <th>Mínimo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="comparisonTable">
+                            <!-- Preenchido via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tools Tab -->
+        <div id="tab-tools" class="tab-content hidden">
+            <div class="card">
+                <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--gold);">
+                    <i class="fas fa-edit"></i> Atualizar Taxas dos Investimentos
+                </h3>
+                <p style="color: var(--text-light); margin-bottom: 1.5rem; line-height: 1.6;">
+                    As taxas variam diariamente no mercado. Atualize aqui com as taxas que você encontrou nas corretoras.
+                </p>
+                
+                <!-- Poupança Editável -->
+                <div style="padding: 1.5rem; background: rgba(255, 152, 0, 0.15); border: 2px solid var(--poupanca); border-radius: 10px; margin-bottom: 2rem;">
+                    <label style="display: block; margin-bottom: 0.8rem;">
+                        <strong style="color: var(--poupanca);">Poupança (Referência)</strong>
+                    </label>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <input 
+                            type="number" 
+                            step="0.01"
+                            value="6.17" 
+                            id="rate-poupanca"
+                            oninput="updatePoupancaRate()"
+                            style="
+                                flex: 1;
+                                padding: 0.8rem;
+                                background: rgba(255, 255, 255, 0.1);
+                                border: 1px solid rgba(255, 255, 255, 0.2);
+                                border-radius: 8px;
+                                color: var(--white);
+                                font-size: 1.1rem;
+                                font-weight: bold;
+                            "
+                        >
+                        <span style="font-weight: 600; color: var(--poupanca);">% a.a.</span>
+                    </div>
+                    <div style="margin-top: 0.8rem; font-size: 0.85rem; color: var(--text-light); line-height: 1.5;">
+                        <strong>Como calcular:</strong><br>
+                        • Se Selic > 8,5%: 0,5% ao mês + TR ≈ 6,17% ao ano<br>
+                        • Se Selic ≤ 8,5%: 70% da Selic + TR
+                    </div>
+                </div>
+                
+                <div class="grid grid-2" id="ratesEditor">
+                    <!-- Preenchido via JS -->
+                </div>
+                <div style="margin-top: 1.5rem; text-align: center;">
+                    <button onclick="resetRates()" style="padding: 0.8rem 2rem; background: transparent; color: var(--secondary); border: 2px solid var(--secondary); border-radius: 10px; cursor: pointer; font-weight: 600;">
+                        <i class="fas fa-undo"></i> Restaurar Todos os Valores Padrão
+                    </button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--green);">
+                    <i class="fas fa-shield-alt"></i> Calculadora FGC - Proteção Máxima
+                </h3>
+                <p style="color: var(--text-light); margin-bottom: 1.5rem; line-height: 1.6;">
+                    O FGC (Fundo Garantidor de Créditos) protege até <strong>R$ 250.000 por CPF por instituição</strong>. 
+                    Se você tem mais que isso, precisa dividir entre bancos diferentes.
+                </p>
+                <div class="input-group">
+                    <label>Quanto você quer investir em renda fixa? (R$)</label>
+                    <input type="number" id="fgcAmount" value="300000" oninput="calculateFGC()">
+                </div>
+                <div id="fgcResult" style="padding: 2rem; background: rgba(16, 185, 129, 0.1); border: 2px solid var(--green); border-radius: 15px; text-align: center; margin-top: 1rem;">
+                    <!-- Preenchido via JS -->
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--secondary);">
+                    <i class="fas fa-percentage"></i> Tabela de IR Regressivo
+                </h3>
+                <table>
+                    <thead style="background: rgba(255, 107, 53, 0.1);">
+                        <tr>
+                            <th>Prazo da Aplicação</th>
+                            <th>Alíquota de IR</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Até 180 dias (6 meses)</td>
+                            <td style="font-weight: bold; color: var(--secondary);">22,5%</td>
+                        </tr>
+                        <tr>
+                            <td>181 a 360 dias (6-12 meses)</td>
+                            <td style="font-weight: bold; color: var(--secondary);">20%</td>
+                        </tr>
+                        <tr>
+                            <td>361 a 720 dias (12-24 meses)</td>
+                            <td style="font-weight: bold; color: var(--green);">17,5%</td>
+                        </tr>
+                        <tr>
+                            <td>Acima de 720 dias (24+ meses)</td>
+                            <td style="font-weight: bold; color: var(--green);">15%</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="warning-box">
+                    <strong style="color: var(--gold);">IOF:</strong> Cobrado apenas em resgates antes de 30 dias, 
+                    com alíquota regressiva de 96% a 0% (1% ao dia até 30 dias).
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--purple);">
+                    <i class="fas fa-book"></i> Glossário Completo
+                </h3>
+                
+                <div style="background: rgba(255, 152, 0, 0.1); border: 2px solid var(--poupanca); border-radius: 15px; padding: 2rem; margin-bottom: 2rem;">
+                    <h4 style="color: var(--poupanca); margin-bottom: 1rem; font-size: 1.3rem;">Poupança</h4>
+                    <p style="font-size: 0.95rem; color: var(--text-light); line-height: 1.7; margin-bottom: 1rem;">
+                        Investimento mais tradicional do Brasil, com rendimento que varia conforme a taxa Selic:
+                    </p>
+                    <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 10px; margin-bottom: 1rem;">
+                        <strong style="color: var(--white);">Regra de rendimento:</strong><br>
+                        • <strong>Selic acima de 8,5% ao ano:</strong> 0,5% ao mês + TR (Taxa Referencial)<br>
+                        • <strong>Selic igual ou abaixo de 8,5% ao ano:</strong> 70% da Selic + TR
+                    </div>
+                    <p style="font-size: 0.95rem; color: var(--text-light); line-height: 1.7; margin-bottom: 1rem;">
+                        <strong>Exemplo prático:</strong><br>
+                        Se a Selic está em 13,75% (acima de 8,5%), a poupança rende aproximadamente:<br>
+                        0,5% × 12 meses = 6% ao ano + TR (geralmente próxima de zero) ≈ <strong style="color: var(--poupanca);">6,17% ao ano</strong>
+                    </p>
+                    <p style="font-size: 0.95rem; color: var(--text-light); line-height: 1.7;">
+                        <strong>Vantagens:</strong> Isenta de IR, liquidez imediata, garantida pelo FGC (até R$ 250 mil).<br>
+                        <strong>Desvantagens:</strong> Rendimento baixo comparado a outros investimentos de renda fixa.
+                    </p>
+                </div>
+
+                <div style="background: rgba(251, 191, 36, 0.1); border: 2px solid var(--gold); border-radius: 15px; padding: 2rem; margin-bottom: 2rem;">
+                    <h4 style="color: var(--gold); margin-bottom: 1rem; font-size: 1.3rem;">Inflação</h4>
+                    <p style="font-size: 0.95rem; color: var(--text-light); line-height: 1.7; margin-bottom: 1rem;">
+                        Aumento generalizado dos preços, que corrói o poder de compra do seu dinheiro ao longo do tempo.
+                    </p>
+                    <p style="font-size: 0.95rem; color: var(--text-light); line-height: 1.7; margin-bottom: 1rem;">
+                        <strong>Exemplo prático:</strong><br>
+                        Se a inflação é 4,5% ao ano e você tem R$ 10.000 parados:<br>
+                        • <strong>Hoje:</strong> R$ 10.000 compram 100 unidades de produtos<br>
+                        • <strong>Após 1 ano:</strong> R$ 10.000 compram apenas 95,5 unidades<br>
+                        • <strong>Perda real:</strong> 4,5% do poder de compra
+                    </p>
+                    <p style="font-size: 0.95rem; color: var(--text-light); line-height: 1.7;">
+                        Por isso é fundamental que seus investimentos rendam <strong>acima da inflação</strong>, caso contrário você está perdendo dinheiro mesmo "ganhando juros".
+                    </p>
+                </div>
+
+                <div style="background: rgba(16, 185, 129, 0.1); border: 2px solid var(--green); border-radius: 15px; padding: 2rem; margin-bottom: 2rem;">
+                    <h4 style="color: var(--green); margin-bottom: 1rem; font-size: 1.3rem;">Rendimento Real</h4>
+                    <p style="font-size: 0.95rem; color: var(--text-light); line-height: 1.7; margin-bottom: 1rem;">
+                        É o ganho efetivo após descontar a inflação. Este é o número que realmente importa!
+                    </p>
+                    <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 10px; margin-bottom: 1rem;">
+                        <strong style="color: var(--white);">Fórmula simplificada:</strong><br>
+                        Rendimento Real ≈ Rendimento Nominal - Inflação
+                    </div>
+                    <p style="font-size: 0.95rem; color: var(--text-light); line-height: 1.7; margin-bottom: 1rem;">
+                        <strong>Comparação prática (R$ 10.000 por 1 ano):</strong>
+                    </p>
+                    <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 10px; margin-bottom: 1rem;">
+                        <strong style="color: var(--poupanca);">Poupança (6,17% a.a.):</strong><br>
+                        • Rendimento nominal: 6,17% = R$ 617<br>
+                        • Inflação: 4,5% = R$ 450<br>
+                        • <strong>Rendimento real: 1,67% = R$ 167</strong><br><br>
+                        
+                        <strong style="color: var(--green);">CDB 110% CDI (15% a.a.):</strong><br>
+                        • Rendimento bruto: 15% = R$ 1.500<br>
+                        • IR (20% para 1 ano): R$ 300<br>
+                        • Rendimento líquido: R$ 1.200<br>
+                        • Inflação: 4,5% = R$ 450<br>
+                        • <strong>Rendimento real: ~7,5% = R$ 750</strong>
+                    </div>
+                    <p style="font-size: 0.95rem; color: var(--text-light); line-height: 1.7;">
+                        Neste exemplo, o CDB 110% CDI entrega <strong style="color: var(--green);">R$ 583 a mais</strong> em poder de compra real do que a poupança, mesmo pagando IR!
+                    </p>
+                </div>
+                
+                <div class="grid grid-2">
+                    <div style="padding: 1rem; background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 10px;">
+                        <h4 style="color: var(--purple); margin-bottom: 0.5rem;">CDI</h4>
+                        <p style="font-size: 0.9rem; color: var(--text-light);">Certificado de Depósito Interbancário. Taxa de referência próxima à Selic, usada como base para CDBs e outros investimentos.</p>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 10px;">
+                        <h4 style="color: var(--purple); margin-bottom: 0.5rem;">Selic</h4>
+                        <p style="font-size: 0.9rem; color: var(--text-light);">Taxa básica de juros da economia brasileira, definida pelo Banco Central. Atualmente em 13,75% a.a.</p>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 10px;">
+                        <h4 style="color: var(--purple); margin-bottom: 0.5rem;">IPCA</h4>
+                        <p style="font-size: 0.9rem; color: var(--text-light);">Índice de Preços ao Consumidor Amplo. Principal medidor da inflação oficial do Brasil.</p>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 10px;">
+                        <h4 style="color: var(--purple); margin-bottom: 0.5rem;">FGC</h4>
+                        <p style="font-size: 0.9rem; color: var(--text-light);">Fundo Garantidor de Créditos. Garante até R$ 250 mil por CPF por instituição financeira.</p>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 10px;">
+                        <h4 style="color: var(--purple); margin-bottom: 0.5rem;">Liquidez</h4>
+                        <p style="font-size: 0.9rem; color: var(--text-light);">Facilidade de converter o investimento em dinheiro. Liquidez diária significa que você pode resgatar a qualquer momento.</p>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 10px;">
+                        <h4 style="color: var(--purple); margin-bottom: 0.5rem;">Taxa Prefixada</h4>
+                        <p style="font-size: 0.9rem; color: var(--text-light);">Rendimento definido no momento da aplicação. Você já sabe exatamente quanto vai receber no vencimento.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="warning-box" style="margin-top: 2rem;">
+            <p style="font-size: 1.1rem; line-height: 1.6; text-align: center;">
+                <i class="fas fa-lightbulb" style="color: var(--gold);"></i>
+                <strong> Dica:</strong> Diversifique! Não coloque todo o dinheiro em um único investimento ou banco.
+                Use a calculadora FGC para garantir proteção máxima.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let POUPANCA_RATE = 6.17; // Taxa atual da poupança (70% da Selic quando > 8.5%)
+        const DEFAULT_POUPANCA_RATE = 6.17;
+        
+        const defaultRates = {
+            'tesouro-selic': 13.75,
+            'tesouro-ipca': 10.5,
+            'cdb-100': 13.65,
+            'cdb-110': 15.0,
+            'lci-lca': 12.3,
+            'debenture': 11.5
+        };
+
+        const investments = {
+            'tesouro-selic': { 
+                name: 'Tesouro Selic', 
+                rate: 13.75, 
+                hasIR: true, 
+                liquidity: 'Imediata (D+0)',
+                custody: 0.25,
+                color: '#3b82f6',
+                minAmount: 30,
+                risk: 'Muito Baixo'
+            },
+            'tesouro-ipca': { 
+                name: 'Tesouro IPCA+ 2035', 
+                rate: 10.5,
+                hasIR: true, 
+                liquidity: 'Diária (com risco)',
+                custody: 0.25,
+                color: '#8b5cf6',
+                minAmount: 30,
+                risk: 'Baixo'
+            },
+            'cdb-100': { 
+                name: 'CDB 100% CDI', 
+                rate: 13.65, 
+                hasIR: true, 
+                liquidity: 'No vencimento',
+                custody: 0,
+                color: '#10b981',
+                minAmount: 1000,
+                risk: 'Baixo (FGC)'
+            },
+            'cdb-110': { 
+                name: 'CDB 110% CDI', 
+                rate: 15.0, 
+                hasIR: true, 
+                liquidity: 'No vencimento',
+                custody: 0,
+                color: '#059669',
+                minAmount: 5000,
+                risk: 'Baixo (FGC)'
+            },
+            'lci-lca': { 
+                name: 'LCI/LCA 90% CDI', 
+                rate: 12.3, 
+                hasIR: false, 
+                liquidity: 'Carência 90 dias',
+                custody: 0,
+                color: '#84cc16',
+                minAmount: 5000,
+                risk: 'Baixo (FGC)'
+            },
+            'debenture': { 
+                name: 'Debênture IPCA+7%', 
+                rate: 11.5,
+                hasIR: true, 
+                liquidity: 'Baixa liquidez',
+                custody: 0,
+                color: '#ef4444',
+                minAmount: 1000,
+                risk: 'Médio/Alto'
+            }
+        };
+
+        let state = {
+            mode: 'single',
+            calculationMode: 'simulate',
+            initialAmount: 10000,
+            monthlyAmount: 500,
+            period: 12,
+            selectedInvestments: ['tesouro-selic'],
+            showInflation: true,
+            showPoupanca: true,
+            inflation: 4.5
+        };
+
+        let lineChart = null;
+        let barChart = null;
+
+        function getTaxRate(months) {
+            if (months <= 6) return 22.5;
+            if (months <= 12) return 20;
+            if (months <= 24) return 17.5;
+            return 15;
+        }
+
+        function calculateSingleInvestment(amount, rate, months, hasIR, custody = 0) {
+            const monthlyRate = rate / 100 / 12;
+            const custodyRate = custody / 100 / 12;
+            
+            let value = amount;
+            for (let i = 0; i < months; i++) {
+                value = value * (1 + monthlyRate);
+                if (custody > 0) {
+                    value = value * (1 - custodyRate);
+                }
+            }
+            
+            const profit = value - amount;
+            const taxRate = getTaxRate(months);
+            const netProfit = hasIR ? profit * (1 - taxRate / 100) : profit;
+            
+            return amount + netProfit;
+        }
+
+        function calculateRecurring(initial, monthly, rate, months, hasIR, custody = 0) {
+            const monthlyRate = rate / 100 / 12;
+            const custodyRate = custody / 100 / 12;
+            let totalInvested = initial;
+            let balance = initial;
+            
+            for (let i = 0; i < months; i++) {
+                balance = balance * (1 + monthlyRate);
+                if (custody > 0) {
+                    balance = balance * (1 - custodyRate);
+                }
+                if (i < months - 1) {
+                    balance += monthly;
+                    totalInvested += monthly;
+                }
+            }
+            
+            const profit = balance - totalInvested;
+            const taxRate = getTaxRate(months);
+            const netProfit = hasIR ? profit * (1 - taxRate / 100) : profit;
+            
+            return {
+                finalValue: totalInvested + netProfit,
+                totalInvested,
+                profit: netProfit
+            };
+        }
+
+
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById('tab-' + tabName).classList.remove('hidden');
+            event.target.closest('.tab-btn').classList.add('active');
+
+            if (tabName === 'dashboard') {
+                setTimeout(() => createBarChart(), 100);
+            }
+        }
+
+        function setMode(mode) {
+            state.mode = mode;
+            const monthlyGroup = document.getElementById('monthlyGroup');
+            const buttons = event.target.parentElement.querySelectorAll('button');
+            
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (mode === 'recurring') {
+                monthlyGroup.style.display = 'block';
+            } else {
+                monthlyGroup.style.display = 'none';
+            }
+            
+            if (state.calculationMode === 'simulate') {
+                updateSimulation();
+            }
+        }
+
+        function setCalculationMode(mode) {
+            state.calculationMode = mode;
+            const buttons = event.target.parentElement.querySelectorAll('button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const simulateMode = document.getElementById('simulateMode');
+            const goalMode = document.getElementById('goalMode');
+            const goalResult = document.getElementById('goalResult');
+            const modeDescription = document.getElementById('modeDescription');
+            const simulateOptions = document.getElementById('simulateOptions');
+            const chartCard = document.getElementById('chartCard');
+            const resultsGrid = document.getElementById('resultsGrid');
+            const poupancaComparison = document.getElementById('poupancaComparison');
+            
+            if (mode === 'simulate') {
+                simulateMode.style.display = 'grid';
+                goalMode.style.display = 'none';
+                goalResult.style.display = 'none';
+                simulateOptions.style.display = 'block';
+                chartCard.style.display = 'block';
+                resultsGrid.style.display = 'grid';
+                modeDescription.textContent = 'Veja quanto seu dinheiro vai render';
+                updateSimulation();
+            } else {
+                simulateMode.style.display = 'none';
+                goalMode.style.display = 'grid';
+                goalResult.style.display = 'block';
+                simulateOptions.style.display = 'none';
+                chartCard.style.display = 'none';
+                resultsGrid.style.display = 'none';
+                poupancaComparison.style.display = 'none';
+                modeDescription.textContent = 'Descubra quanto investir por mês para atingir sua meta';
+                calculateGoalAport();
+            }
+        }
+
+        function updatePeriodLabel() {
+            const period = document.getElementById('period').value;
+            document.getElementById('periodLabel').textContent = period;
+            document.getElementById('periodYears').textContent = (period / 12).toFixed(1);
+        }
+
+        function updateGoalPeriodLabel() {
+            const period = document.getElementById('goalPeriod').value;
+            document.getElementById('goalPeriodLabel').textContent = period;
+            document.getElementById('goalPeriodYears').textContent = (period / 12).toFixed(1);
+        }
+
+        function calculateGoalAport() {
+            const goalAmount = parseFloat(document.getElementById('goalAmount').value) || 100000;
+            const initialAmount = parseFloat(document.getElementById('goalInitialAmount').value) || 0;
+            const period = parseInt(document.getElementById('goalPeriod').value) || 120;
+            const invKey = document.getElementById('goalInvestment').value || 'tesouro-selic';
+            
+            const inv = investments[invKey];
+            const monthlyRate = inv.rate / 100 / 12;
+            const taxRate = getTaxRate(period);
+            
+            const adjustedGoal = inv.hasIR ? goalAmount / (1 - taxRate / 100) : goalAmount;
+            
+            let futureInitial = initialAmount;
+            for (let i = 0; i < period; i++) {
+                futureInitial = futureInitial * (1 + monthlyRate);
+                if (inv.custody > 0) {
+                    futureInitial = futureInitial * (1 - inv.custody / 100 / 12);
+                }
+            }
+            
+            const remaining = adjustedGoal - futureInitial;
+            
+            let monthlyPayment = 0;
+            if (remaining > 0) {
+                const factor = Math.pow(1 + monthlyRate, period) - 1;
+                monthlyPayment = (remaining * monthlyRate) / factor;
+                
+                if (inv.custody > 0) {
+                    monthlyPayment = monthlyPayment * (1 + inv.custody / 100 / 12);
+                }
+            }
+            
+            document.getElementById('goalResultAmount').textContent = 
+                'R$ ' + monthlyPayment.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            
+            if (monthlyPayment <= 0) {
+                document.getElementById('goalResultText').textContent = 'Seu valor inicial já é suficiente!';
+            } else {
+                document.getElementById('goalResultText').innerHTML = `
+                    por mês durante ${period} meses (${(period/12).toFixed(1)} anos)<br>
+                    <span style="font-size: 0.9rem; opacity: 0.8;">
+                        Investimento: ${inv.name} (${inv.rate}% a.a.)
+                    </span>
+                `;
+            }
+        }
+
+        function initializeCheckboxes() {
+            const container = document.getElementById('investmentCheckboxes');
+            container.innerHTML = '';
+            
+            Object.entries(investments).forEach(([key, inv]) => {
+                const checked = state.selectedInvestments.includes(key);
+                const label = document.createElement('label');
+                label.className = 'checkbox-label' + (checked ? ' checked' : '');
+                label.innerHTML = `
+                    <input type="checkbox" ${checked ? 'checked' : ''} 
+                           onchange="toggleInvestment('${key}')" style="accent-color: ${inv.color}">
+                    <span style="font-size: 0.9rem; font-weight: 500;">${inv.name}</span>
+                `;
+                container.appendChild(label);
+            });
+        }
+
+        function toggleInvestment(key) {
+            const index = state.selectedInvestments.indexOf(key);
+            if (index > -1) {
+                state.selectedInvestments.splice(index, 1);
+            } else if (state.selectedInvestments.length < 4) {
+                state.selectedInvestments.push(key);
+            } else {
+                alert('Você pode comparar até 4 investimentos por vez.');
+                return;
+            }
+            
+            initializeCheckboxes();
+            
+            if (lineChart) {
+                lineChart.destroy();
+                lineChart = null;
+            }
+            
+            updateSimulation();
+        }
+
+        function updateSimulation() {
+            const initialInput = document.getElementById('initialAmount').value;
+            state.initialAmount = initialInput === '' ? 0 : parseFloat(initialInput);
+            state.monthlyAmount = parseFloat(document.getElementById('monthlyAmount').value) || 500;
+            state.period = parseInt(document.getElementById('period').value) || 12;
+            state.showInflation = document.getElementById('showInflation').checked;
+            state.showPoupanca = document.getElementById('showPoupanca').checked;
+            state.inflation = parseFloat(document.getElementById('inflationRate').value) || 4.5;
+            
+            if (lineChart) {
+                lineChart.destroy();
+                lineChart = null;
+            }
+            
+            createLineChart();
+            updateResults();
+            updatePoupancaComparison();
+        }
+
+        function updatePoupancaComparison() {
+            const container = document.getElementById('poupancaComparisonGrid');
+            const section = document.getElementById('poupancaComparison');
+            
+            if (!state.showPoupanca || state.selectedInvestments.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+            
+            section.style.display = 'block';
+            container.innerHTML = '';
+            
+            let poupancaResult;
+            if (state.mode === 'single') {
+                const final = calculateSingleInvestment(state.initialAmount, POUPANCA_RATE, state.period, false, 0);
+                poupancaResult = {
+                    finalValue: final,
+                    totalInvested: state.initialAmount,
+                    profit: final - state.initialAmount
+                };
+            } else {
+                poupancaResult = calculateRecurring(state.initialAmount, state.monthlyAmount, POUPANCA_RATE, state.period, false, 0);
+            }
+            
+            state.selectedInvestments.forEach(key => {
+                const inv = investments[key];
+                let invResult;
+                
+                if (state.mode === 'single') {
+                    const final = calculateSingleInvestment(state.initialAmount, inv.rate, state.period, inv.hasIR, inv.custody);
+                    invResult = {
+                        finalValue: final,
+                        totalInvested: state.initialAmount,
+                        profit: final - state.initialAmount
+                    };
+                } else {
+                    invResult = calculateRecurring(state.initialAmount, state.monthlyAmount, inv.rate, state.period, inv.hasIR, inv.custody);
+                }
+                
+                const difference = invResult.finalValue - poupancaResult.finalValue;
+                const percentDiff = ((difference / poupancaResult.finalValue) * 100).toFixed(2);
+                
+                const item = document.createElement('div');
+                item.className = 'comparison-item';
+                item.innerHTML = `
+                    <div style="font-weight: 600; color: ${inv.color}; margin-bottom: 0.5rem;">${inv.name}</div>
+                    <div class="comparison-value" style="color: ${difference > 0 ? 'var(--green)' : 'var(--secondary)'};">
+                        ${difference > 0 ? '+' : ''}R$ ${difference.toLocaleString('pt-BR', {minimumFractionDigits: 2})}
+                    </div>
+                    <div style="color: var(--text-light); font-size: 0.9rem;">
+                        ${difference > 0 ? '+' : ''}${percentDiff}% vs Poupança
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function createLineChart() {
+            const canvas = document.getElementById('lineChart');
+            const ctx = canvas.getContext('2d');
+            
+            if (lineChart) {
+                lineChart.destroy();
+            }
+
+            const data = generateTimeSeriesData();
+            
+            lineChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: data.datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#ffffff'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': R$ ' + 
+                                           context.parsed.y.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#b0b0b0' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        y: {
+                            ticks: { 
+                                color: '#b0b0b0',
+                                callback: function(value) {
+                                    return 'R$ ' + (value/1000).toFixed(0) + 'k';
+                                }
+                            },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function generateTimeSeriesData() {
+            const labels = [];
+            const datasets = [];
+            
+            for (let i = 0; i <= state.period; i++) {
+                labels.push(i);
+            }
+            
+            // Poupança
+            if (state.showPoupanca) {
+                const poupancaData = [];
+                for (let month = 0; month <= state.period; month++) {
+                    let value;
+                    if (state.mode === 'single') {
+                        value = calculateSingleInvestment(state.initialAmount, POUPANCA_RATE, month, false, 0);
+                    } else {
+                        const result = calculateRecurring(state.initialAmount, state.monthlyAmount, POUPANCA_RATE, month, false, 0);
+                        value = result.finalValue;
+                    }
+                    poupancaData.push(value);
+                }
+                
+                datasets.push({
+                    label: 'Poupança (Referência)',
+                    data: poupancaData,
+                    borderColor: '#ff9800',
+                    backgroundColor: 'transparent',
+                    borderWidth: 3,
+                    borderDash: [10, 5],
+                    tension: 0.1,
+                    pointRadius: 0
+                });
+            }
+            
+            // Investimentos selecionados
+            state.selectedInvestments.forEach(key => {
+                const inv = investments[key];
+                const data = [];
+                const realData = [];
+                
+                for (let month = 0; month <= state.period; month++) {
+                    let value;
+                    if (state.mode === 'single') {
+                        value = calculateSingleInvestment(state.initialAmount, inv.rate, month, inv.hasIR, inv.custody);
+                    } else {
+                        const result = calculateRecurring(state.initialAmount, state.monthlyAmount, inv.rate, month, inv.hasIR, inv.custody);
+                        value = result.finalValue;
+                    }
+                    
+                    data.push(value);
+                    
+                    if (state.showInflation && month > 0) {
+                        const monthlyInflation = state.inflation / 100 / 12;
+                        const realValue = value / Math.pow(1 + monthlyInflation, month);
+                        realData.push(realValue);
+                    } else {
+                        realData.push(null);
+                    }
+                }
+                
+                datasets.push({
+                    label: inv.name,
+                    data: data,
+                    borderColor: inv.color,
+                    backgroundColor: inv.color + '40',
+                    borderWidth: 3,
+                    tension: 0.1
+                });
+                
+                if (state.showInflation) {
+                    datasets.push({
+                        label: inv.name + ' (Real)',
+                        data: realData,
+                        borderColor: inv.color,
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        tension: 0.1
+                    });
+                }
+            });
+            
+            return { labels, datasets };
+        }
+
+        function updateResults() {
+            const container = document.getElementById('resultsGrid');
+            container.innerHTML = '';
+            
+            state.selectedInvestments.forEach(key => {
+                const inv = investments[key];
+                let result;
+                
+                if (state.mode === 'single') {
+                    const final = calculateSingleInvestment(state.initialAmount, inv.rate, state.period, inv.hasIR, inv.custody);
+                    result = {
+                        finalValue: final,
+                        totalInvested: state.initialAmount,
+                        profit: final - state.initialAmount
+                    };
+                } else {
+                    result = calculateRecurring(state.initialAmount, state.monthlyAmount, inv.rate, state.period, inv.hasIR, inv.custody);
+                }
+
+                const returnPercent = (result.profit / result.totalInvested * 100).toFixed(2);
+                
+                // Comparação com poupança
+                let poupancaResult;
+                if (state.mode === 'single') {
+                    const final = calculateSingleInvestment(state.initialAmount, POUPANCA_RATE, state.period, false, 0);
+                    poupancaResult = {
+                        finalValue: final,
+                        profit: final - state.initialAmount
+                    };
+                } else {
+                    poupancaResult = calculateRecurring(state.initialAmount, state.monthlyAmount, POUPANCA_RATE, state.period, false, 0);
+                }
+                
+                const vsPoupanca = result.profit - poupancaResult.profit;
+                
+                const card = document.createElement('div');
+                card.className = 'result-card';
+                card.style.borderColor = inv.color;
+                card.style.background = inv.color + '15';
+                card.innerHTML = `
+                    <h4 style="color: ${inv.color};">${inv.name}</h4>
+                    <div class="result-item">
+                        <div class="label">Total Investido:</div>
+                        <div class="value">R$ ${result.totalInvested.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="label">Valor Final:</div>
+                        <div class="value" style="color: ${inv.color}; font-size: 1.3rem;">
+                            R$ ${result.finalValue.toLocaleString('pt-BR', {minimumFractionDigits: 2})}
+                        </div>
+                    </div>
+                    <div class="result-item">
+                        <div class="label">Lucro Líquido:</div>
+                        <div class="value" style="color: var(--green);">
+                            R$ ${result.profit.toLocaleString('pt-BR', {minimumFractionDigits: 2})}
+                            <span style="font-size: 0.9rem; margin-left: 0.5rem;">(${returnPercent}%)</span>
+                        </div>
+                    </div>
+                    
+                    ${state.showPoupanca ? `
+                    <div class="vs-poupanca">
+                        <strong>vs Poupança:</strong> 
+                        <span class="gain">${vsPoupanca > 0 ? '+' : ''}R$ ${vsPoupanca.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+                        <div style="font-size: 0.8rem; margin-top: 0.3rem; color: var(--text-light);">
+                            ${vsPoupanca > 0 ? 'Você ganha ' : 'Você perde '}R$ ${Math.abs(vsPoupanca).toLocaleString('pt-BR', {minimumFractionDigits: 2})} a mais que na poupança
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    <div style="font-size: 0.85rem; color: var(--text-light); border-top: 1px solid rgba(255,255,255,0.1); padding-top: 0.8rem; margin-top: 0.8rem;">
+                        <div>Taxa: ${inv.rate}% a.a.</div>
+                        <div>IR: ${inv.hasIR ? getTaxRate(state.period) + '%' : 'Isento'}</div>
+                        <div>Liquidez: ${inv.liquidity}</div>
+                        <div>Risco: ${inv.risk}</div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function createBarChart() {
+            const canvas = document.getElementById('barChart');
+            const ctx = canvas.getContext('2d');
+            
+            if (barChart) {
+                barChart.destroy();
+            }
+
+            const data = Object.entries(investments).map(([key, inv]) => {
+                const result = calculateRecurring(10000, 0, inv.rate, 12, inv.hasIR, inv.custody);
+                return {
+                    name: inv.name,
+                    value: ((result.finalValue - 10000) / 10000 * 100).toFixed(2),
+                    color: inv.color
+                };
+            });
+            
+            // Adicionar poupança
+            const poupancaResult = calculateRecurring(10000, 0, POUPANCA_RATE, 12, false, 0);
+            data.push({
+                name: 'Poupança',
+                value: ((poupancaResult.finalValue - 10000) / 10000 * 100).toFixed(2),
+                color: '#ff9800'
+            });
+            
+            barChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(d => d.name),
+                    datasets: [{
+                        label: 'Retorno Anual (%)',
+                        data: data.map(d => d.value),
+                        backgroundColor: data.map(d => d.color)
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#b0b0b0' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        y: {
+                            ticks: { color: '#b0b0b0' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        }
+                    }
+                }
+            });
+
+            const tbody = document.getElementById('comparisonTable');
+            tbody.innerHTML = '';
+            
+            // Adicionar poupança na tabela
+            const poupancaRow = tbody.insertRow();
+            poupancaRow.innerHTML = `
+                <td style="font-weight: 600; color: #ff9800;">Poupança</td>
+                <td>${POUPANCA_RATE}%</td>
+                <td>Isento</td>
+                <td>Imediata</td>
+                <td>Muito Baixo</td>
+                <td>R$ 0</td>
+            `;
+            
+            Object.entries(investments).forEach(([key, inv]) => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td style="font-weight: 600; color: ${inv.color};">${inv.name}</td>
+                    <td>${inv.rate}%</td>
+                    <td>${inv.hasIR ? 'Sim' : 'Isento'}</td>
+                    <td>${inv.liquidity}</td>
+                    <td>${inv.risk}</td>
+                    <td>R$ ${inv.minAmount}</td>
+                `;
+            });
+        }
+
+        function calculateFGC() {
+            const amount = parseFloat(document.getElementById('fgcAmount').value) || 300000;
+            const banks = Math.ceil(amount / 250000);
+            const perBank = (amount / banks).toFixed(2);
+            
+            document.getElementById('fgcResult').innerHTML = `
+                <div style="font-size: 1.2rem; margin-bottom: 1rem;">
+                    Você precisa de <strong style="color: var(--green); font-size: 1.5rem;">${banks}</strong> 
+                    ${banks === 1 ? 'banco' : 'bancos diferentes'}
+                </div>
+                <div style="font-size: 1rem; color: var(--text-light);">
+                    Investir <strong>R$ ${parseFloat(perBank).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</strong> em cada banco
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 10px; font-size: 0.9rem;">
+                    <i class="fas fa-check-circle" style="color: var(--green);"></i> 
+                    Seu dinheiro estará 100% protegido pelo FGC
+                </div>
+            `;
+        }
+
+        function initializeRatesEditor() {
+            const container = document.getElementById('ratesEditor');
+            container.innerHTML = '';
+            
+            Object.entries(investments).forEach(([key, inv]) => {
+                const div = document.createElement('div');
+                div.style.cssText = `
+                    padding: 1.5rem;
+                    background: ${inv.color}15;
+                    border: 2px solid ${inv.color};
+                    border-radius: 10px;
+                `;
+                div.innerHTML = `
+                    <label style="display: block; margin-bottom: 0.8rem;">
+                        <strong style="color: ${inv.color};">${inv.name}</strong>
+                    </label>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <input 
+                            type="number" 
+                            step="0.01"
+                            value="${inv.rate}" 
+                            id="rate-${key}"
+                            oninput="updateRate('${key}')"
+                            style="
+                                flex: 1;
+                                padding: 0.8rem;
+                                background: rgba(255, 255, 255, 0.1);
+                                border: 1px solid rgba(255, 255, 255, 0.2);
+                                border-radius: 8px;
+                                color: var(--white);
+                                font-size: 1.1rem;
+                                font-weight: bold;
+                            "
+                        >
+                        <span style="font-weight: 600; color: ${inv.color};">% a.a.</span>
+                    </div>
+                    <div style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-light);">
+                        ${inv.hasIR ? 'Com IR' : 'Isento de IR'} • ${inv.liquidity}
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function updateRate(key) {
+            const newRate = parseFloat(document.getElementById(`rate-${key}`).value);
+            if (!isNaN(newRate) && newRate > 0) {
+                investments[key].rate = newRate;
+                
+                if (!document.getElementById('tab-simulador').classList.contains('hidden')) {
+                    if (state.calculationMode === 'simulate') {
+                        updateSimulation();
+                    } else {
+                        calculateGoalAport();
+                    }
+                }
+            }
+        }
+
+        function updatePoupancaRate() {
+            const newRate = parseFloat(document.getElementById('rate-poupanca').value);
+            if (!isNaN(newRate) && newRate > 0) {
+                POUPANCA_RATE = newRate;
+                
+                if (!document.getElementById('tab-simulador').classList.contains('hidden')) {
+                    if (state.calculationMode === 'simulate') {
+                        updateSimulation();
+                    }
+                }
+            }
+        }
+
+        function resetRates() {
+            // Reset investimentos
+            Object.entries(defaultRates).forEach(([key, rate]) => {
+                investments[key].rate = rate;
+                const input = document.getElementById(`rate-${key}`);
+                if (input) {
+                    input.value = rate;
+                }
+            });
+            
+            // Reset poupança
+            POUPANCA_RATE = DEFAULT_POUPANCA_RATE;
+            const poupancaInput = document.getElementById('rate-poupanca');
+            if (poupancaInput) {
+                poupancaInput.value = DEFAULT_POUPANCA_RATE;
+            }
+            
+            if (state.calculationMode === 'simulate') {
+                updateSimulation();
+            } else {
+                calculateGoalAport();
+            }
+            
+            alert('Taxas restauradas para os valores padrão!');
+        }
+
+        function initializeGoalSelect() {
+            const select = document.getElementById('goalInvestment');
+            select.innerHTML = '';
+            
+            Object.entries(investments).forEach(([key, inv]) => {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = `${inv.name} (${inv.rate}% a.a.)`;
+                select.appendChild(option);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCheckboxes();
+            initializeRatesEditor();
+            initializeGoalSelect();
+            updateSimulation();
+            calculateFGC();
+        });
+    </script>
+
+    <script>
+        // Quando embutida no site (iframe), oculta o cabeçalho próprio
+        if (window.self !== window.top) {
+            var h = document.querySelector('header, .header');
+            if (h) h.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

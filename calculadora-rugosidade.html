@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Rugosidade | Rogerinho Ramos</title>
+    <!-- Google Analytics 4: substitua G-XXXXXXXXXX pelo ID da sua propriedade -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX');
+    </script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%2300d4ff'/><stop offset='1' stop-color='%238b5cf6'/></linearGradient></defs><rect width='100' height='100' rx='20' fill='url(%23g)'/><text x='50' y='68' font-size='50' font-weight='bold' text-anchor='middle' fill='white' font-family='Arial'>RR</text></svg>">
+    <meta name="description" content="Calculadora de rugosidade superficial (Ra) e avanço (f) — fórmulas teórica padrão e adaptada. Ferramenta técnica de usinagem por Rogerinho Ramos.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #00d4ff;
+            --secondary: #ff6b35;
+            --accent: #4ecdc4;
+            --purple: #8b5cf6;
+            --green: #10b981;
+            --dark: #0a0a0a;
+            --gray: #1a1a1a;
+            --light-gray: #2a2a2a;
+            --white: #ffffff;
+            --text-light: #b0b0b0;
+            --gold: #fbbf24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark);
+            color: var(--white);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        a { text-decoration: none; color: inherit; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+
+        /* ===== HEADER (mesmo padrão do site principal e da Videoteca) ===== */
+        header {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        nav { max-width: 1200px; margin: 0 auto; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.4rem; font-weight: 700; }
+        .logo span { color: var(--primary); }
+        .nav-links { display: flex; gap: 1.5rem; align-items: center; list-style: none; flex-wrap: wrap; }
+        .nav-links a {
+            color: var(--text-light); font-weight: 500; padding: 0.5rem 0.75rem; border-radius: 8px;
+            transition: all 0.3s ease; font-size: 0.95rem;
+        }
+        .nav-links a:hover { color: var(--white); background: rgba(255, 255, 255, 0.06); }
+        .nav-links a.active { color: var(--primary); }
+        .btn-outline {
+            border: 1px solid var(--primary); color: var(--primary);
+            padding: 0.55rem 1.2rem; border-radius: 50px; font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-outline:hover { background: var(--primary); color: var(--dark); }
+
+        /* ===== CONTEÚDO ===== */
+        main { padding-top: 5.5rem; }
+        .section { padding: 6rem 2rem; max-width: 1200px; margin: 0 auto; }
+        .section-title { font-size: 2.2rem; font-weight: 800; text-align: center; margin-bottom: 0.75rem; }
+        .section-subtitle { text-align: center; color: var(--text-light); max-width: 720px; margin: 0 auto 2.5rem; }
+
+        /* ===== CALCULADORA ===== */
+        .mode-selector button.active { background: var(--primary); color: var(--dark); }
+        .input-group input:focus { outline: none; border-color: var(--primary); }
+        .result-box h3 { color: var(--primary); }
+        .result-value { color: var(--primary); }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: var(--gray); border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 3rem 2rem 2rem; margin-top: 4rem;
+        }
+        .footer-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem; }
+        .footer-social { display: flex; gap: 1rem; }
+        .footer-social a {
+            width: 42px; height: 42px; border-radius: 50%;
+            background: var(--light-gray); display: flex; align-items: center; justify-content: center;
+            color: var(--text-light); transition: all 0.3s ease;
+        }
+        .footer-social a:hover { background: var(--primary); color: var(--dark); transform: translateY(-3px); }
+        .footer-bottom { text-align: center; color: var(--text-light); margin-top: 2rem; font-size: 0.9rem; }
+
+        /* ===== RESPONSIVO ===== */
+        @media (max-width: 768px) {
+            nav { flex-direction: column; gap: 0.75rem; }
+            .section { padding: 4rem 1.25rem; }
+            .section-title { font-size: 1.8rem; }
+            .footer-content { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">Rogerinho <span>Ramos</span></a>
+            <ul class="nav-links">
+                <li><a href="index.html">Início</a></li>
+                <li><a href="videoteca.html">Videoteca</a></li>
+                <li><a href="simulador-cnc.html">Simulador CNC</a></li>
+                <li><a href="renda-fixa.html">Renda Fixa</a></li>
+                <li><a href="calculadora-rugosidade.html" class="active">Calculadora Rugosidade</a></li>
+                <li><a href="https://github.com/RogerinhoRamos" target="_blank" class="btn-outline">GitHub</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+    <section class="section" id="calculator">
+        <h2 class="section-title">Calculadora de Rugosidade Superficial</h2>
+        <p class="section-subtitle">Use esta ferramenta para calcular a rugosidade superficial teórica, tanto pela fórmula padrão quanto pela adaptada.</p>
+        <div class="calculator-container" style="
+            max-width: 800px; margin: auto; background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px; padding: 3rem; box-shadow: 0 4px 8px rgba(0,0,0,0.1); text-align: center;">
+            <div class="mode-selector" style="display:flex; justify-content:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
+                <button id="modeRaBtn" class="active" onclick="setMode('ra')" style="background:transparent; color:var(--white); border:1px solid rgba(255,255,255,0.2); padding:10px 15px; cursor:pointer; border-radius:50px; transition:all 0.3s ease;">Calcular Rugosidade ($Ra$)</button>
+                <button id="modeFeedBtn" onclick="setMode('feed')" style="background:transparent; color:var(--white); border:1px solid rgba(255,255,255,0.2); padding:10px 15px; cursor:pointer; border-radius:50px; transition:all 0.3s ease;">Calcular Avanço ($f$)</button>
+            </div>
+            <div id="calculator-inputs">
+                <div class="input-group" style="margin-bottom:15px;">
+                    <label for="inputRa" id="labelRa" style="display:block; margin-bottom:5px; font-weight:bold;">Rugosidade ($Ra$) em µm:</label>
+                    <input type="number" id="inputRa" placeholder="Ex: 3.2" step="any" disabled style="width:calc(100% - 22px); padding:10px; border:1px solid rgba(255,255,255,0.2); border-radius:10px; background:rgba(255,255,255,0.05); color:var(--white);">
+                </div>
+                <div class="input-group" style="margin-bottom:15px;">
+                    <label for="inputFeed" id="labelFeed" style="display:block; margin-bottom:5px; font-weight:bold;">Avanço ($f$) em mm/rot:</label>
+                    <input type="number" id="inputFeed" placeholder="Ex: 0.22" step="any" style="width:calc(100% - 22px); padding:10px; border:1px solid rgba(255,255,255,0.2); border-radius:10px; background:rgba(255,255,255,0.05); color:var(--white);">
+                </div>
+                <div class="input-group" style="margin-bottom:15px;">
+                    <label for="inputRadius" id="labelRadius" style="display:block; margin-bottom:5px; font-weight:bold;">Raio do Inserto ($r$) em mm:</label>
+                    <input type="number" id="inputRadius" placeholder="Ex: 0.8" step="any" style="width:calc(100% - 22px); padding:10px; border:1px solid rgba(255,255,255,0.2); border-radius:10px; background:rgba(255,255,255,0.05); color:var(--white);">
+                </div>
+            </div>
+            <div class="results" style="display:flex; justify-content:space-around; margin-top:30px; flex-wrap:wrap; gap:20px;">
+                <div class="result-box" style="flex:1; min-width:300px; padding:20px; border:1px solid rgba(255,255,255,0.1); border-radius:8px; text-align:center; background:rgba(255,255,255,0.05);">
+                    <h3 style="margin-top:0; color:var(--primary);">Fórmula Teórica Padrão</h3>
+                    <p style="color:var(--text-light);">Ra = f² / (8 * r)</p>
+                    <p class="result-value" id="resultPadrão" style="font-size:2em; font-weight:bold; margin:10px 0; color:var(--white);"></p>
+                    <p class="formula" style="font-style:italic; margin-top:10px; color:var(--text-light);">Calcula a rugosidade ideal em condições perfeitas.</p>
+                </div>
+                <div class="result-box" style="flex:1; min-width:300px; padding:20px; border:1px solid rgba(255,255,255,0.1); border-radius:8px; text-align:center; background:rgba(255,255,255,0.05);">
+                    <h3 style="margin-top:0; color:var(--primary);">Fórmula Adaptada</h3>
+                    <p style="color:var(--text-light);">Ra = 50 * f² / r</p>
+                    <p class="result-value" id="resultAdaptada" style="font-size:2em; font-weight:bold; margin:10px 0; color:var(--white);"></p>
+                    <p class="formula" style="font-style:italic; margin-top:10px; color:var(--text-light);">A constante 50 compensa fatores práticos, aproximando do valor real.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <div class="logo">Rogerinho <span style="color:var(--primary);">Ramos</span></div>
+                <p style="color:var(--text-light); margin-top:0.5rem;">My Life Essence — fé, família e propósito.</p>
+            </div>
+            <div class="footer-social">
+                <a href="https://github.com/RogerinhoRamos" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/rogerio-costa-ramos-849651187" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://www.youtube.com/@RogerinhoRamos" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 Rogério Costa Ramos (Rogerinho). Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Novo script da calculadora
+        const inputRa = document.getElementById('inputRa');
+        const inputFeed = document.getElementById('inputFeed');
+        const inputRadius = document.getElementById('inputRadius');
+        const resultPadrão = document.getElementById('resultPadrão');
+        const resultAdaptada = document.getElementById('resultAdaptada');
+        const modeRaBtn = document.getElementById('modeRaBtn');
+        const modeFeedBtn = document.getElementById('modeFeedBtn');
+
+        let mode = 'ra';
+
+        function setMode(newMode) {
+            mode = newMode;
+            if (mode === 'ra') {
+                inputRa.disabled = true;
+                inputFeed.disabled = false;
+                modeRaBtn.classList.add('active');
+                modeFeedBtn.classList.remove('active');
+                document.getElementById('labelRa').style.color = 'var(--text-light)';
+                document.getElementById('labelFeed').style.color = 'var(--primary)';
+                inputRa.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+                inputFeed.style.border = '1px solid var(--primary)';
+                modeRaBtn.style.borderColor = 'var(--primary)';
+                modeRaBtn.style.color = 'var(--primary)';
+                modeFeedBtn.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                modeFeedBtn.style.color = 'var(--white)';
+            } else {
+                inputRa.disabled = false;
+                inputFeed.disabled = true;
+                modeRaBtn.classList.remove('active');
+                modeFeedBtn.classList.add('active');
+                document.getElementById('labelRa').style.color = 'var(--primary)';
+                document.getElementById('labelFeed').style.color = 'var(--text-light)';
+                inputRa.style.border = '1px solid var(--primary)';
+                inputFeed.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+                modeRaBtn.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                modeRaBtn.style.color = 'var(--white)';
+                modeFeedBtn.style.borderColor = 'var(--primary)';
+                modeFeedBtn.style.color = 'var(--primary)';
+            }
+            calculate();
+        }
+
+        function calculate() {
+            const r = parseFloat(inputRadius.value);
+            if (isNaN(r) || r <= 0) {
+                resultPadrão.textContent = 'Dados Inválidos';
+                resultAdaptada.textContent = 'Dados Inválidos';
+                return;
+            }
+            if (mode === 'ra') {
+                const f = parseFloat(inputFeed.value);
+                if (isNaN(f)) { resultPadrão.textContent = ''; resultAdaptada.textContent = ''; return; }
+                const raPadrão = (f * f) / (8 * r);
+                resultPadrão.textContent = raPadrão.toFixed(4) + ' µm';
+                const raAdaptada = (50 * f * f) / r;
+                resultAdaptada.textContent = raAdaptada.toFixed(4) + ' µm';
+            } else if (mode === 'feed') {
+                const ra = parseFloat(inputRa.value);
+                if (isNaN(ra) || ra <= 0) { resultPadrão.textContent = ''; resultAdaptada.textContent = ''; return; }
+                const fPadrão = Math.sqrt(ra * 8 * r);
+                resultPadrão.textContent = fPadrão.toFixed(4) + ' mm/rot';
+                const fAdaptada = Math.sqrt((ra * r) / 50);
+                resultAdaptada.textContent = fAdaptada.toFixed(4) + ' mm/rot';
+            }
+        }
+
+        inputRa.addEventListener('input', calculate);
+        inputFeed.addEventListener('input', calculate);
+        inputRadius.addEventListener('input', calculate);
+
+        setMode('ra');
+    </script>
+
+    <script>
+        // Quando embutida no site (iframe), oculta o cabeçalho próprio
+        if (window.self !== window.top) {
+            var h = document.querySelector('header, .header');
+            if (h) h.style.display = 'none';
+            var m = document.querySelector('main');
+            if (m) m.style.paddingTop = '0';
+        }
+    </script>
+</body>
+</html>

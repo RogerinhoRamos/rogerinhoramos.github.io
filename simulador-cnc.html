@@ -1,0 +1,2420 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador CNC Profissional v3.0 | RR Rogerinho Ramos</title>
+    <meta name="description" content="Simulador CNC profissional com visualização 3D de trajetórias de usinagem. Ferramenta gratuita por Rogerinho Ramos.">
+
+    <!-- Google Analytics 4: substitua G-XXXXXXXXXX pelo ID da sua propriedade -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX');
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            overflow-x: hidden;
+            width: 100%;
+            scroll-behavior: smooth;
+        }
+
+        :root {
+            --primary: #00d4ff;
+            --secondary: #ff6b35;
+            --purple: #8b5cf6;
+            --green: #10b981;
+            --gold: #fbbf24;
+            --accent: #4ecdc4;
+            --dark: #0a0a0a;
+            --gray: #1a1a1a;
+            --light-gray: #2a2a2a;
+            --white: #ffffff;
+            --text-light: #b0b0b0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--dark) 0%, var(--gray) 100%);
+            color: var(--white);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            overflow-y: auto;
+            width: 100%;
+            max-width: 100vw;
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--gray); }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border-radius: 4px;
+        }
+
+        .header {
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 2%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+            max-width: 100vw;
+            overflow-x: hidden;
+        }
+
+        .header-content {
+            max-width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .logo-rr {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-nome {
+            font-size: 1.3rem;
+            font-weight: 500;
+            font-family: 'Brush Script MT', cursive;
+            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-title {
+            flex: 1;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .back-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: rgba(0, 212, 255, 0.1);
+            transform: translateX(-3px);
+        }
+
+        .main-container {
+            display: flex;
+            height: calc(100vh - 80px);
+            overflow: hidden;
+            width: 100%;
+            max-width: 100vw;
+        }
+
+        .editor-section {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .editor-toolbar {
+            background: rgba(10, 10, 10, 0.95);
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .program-name-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 0.6rem;
+            color: var(--white);
+            font-size: 1rem;
+            font-weight: 600;
+            width: 100%;
+        }
+
+        .program-name-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .toolbar-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .numbering-controls {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            background: rgba(139, 92, 246, 0.1);
+            padding: 0.5rem;
+            border-radius: 10px;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .increment-input {
+            width: 60px;
+            padding: 0.3rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            color: var(--white);
+            font-size: 0.8rem;
+            text-align: center;
+        }
+
+        .increment-input:focus {
+            outline: none;
+            border-color: var(--purple);
+        }
+
+        .dialect-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.6rem 1rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: var(--white);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--white);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-dialect {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            color: var(--white);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.8rem;
+        }
+
+        .btn-dialect.active {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-small {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.75rem;
+        }
+
+        .editor-area {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .line-numbers {
+            background: var(--gray);
+            padding: 1rem 0.8rem;
+            text-align: right;
+            color: var(--text-light);
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            overflow-y: auto;
+            user-select: none;
+        }
+
+        .line-number {
+            padding: 0 0.5rem;
+        }
+
+        .line-number.active {
+            background: rgba(0, 212, 255, 0.3);
+            color: var(--white);
+            font-weight: bold;
+        }
+
+        .code-editor-wrapper {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .code-editor {
+            width: 100%;
+            height: 100%;
+            background: var(--dark);
+            color: #e0e0e0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            padding: 1rem;
+            border: none;
+            outline: none;
+            resize: none;
+            overflow-y: auto;
+            tab-size: 4;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .code-highlight {
+            width: 100%;
+            height: 100%;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            padding: 1rem;
+            overflow-y: auto;
+            pointer-events: none;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .code-editor::placeholder {
+            color: var(--text-light);
+        }
+
+        .hl-g00 { color: #ff4444; font-weight: bold; }
+        .hl-g01 { color: #44ff44; font-weight: bold; }
+        .hl-g02 { color: #00bfff; font-weight: bold; }
+        .hl-g33 { color: #ff6b35; font-weight: bold; }
+        .hl-g76 { color: #ff6b35; font-weight: bold; }
+        .hl-g-other { color: #a78bfa; font-weight: bold; }
+        .hl-m { color: #fbbf24; font-weight: bold; }
+        .hl-number { color: #60a5fa; }
+        .hl-comment { color: #6b7280; font-style: italic; }
+        .hl-letter { color: #f472b6; }
+
+        .editor-controls {
+            background: rgba(10, 10, 10, 0.95);
+            padding: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .viewer-section {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .viewer-header {
+            background: rgba(10, 10, 10, 0.95);
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .viewer-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.8rem;
+        }
+
+        .legend {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .legend-line {
+            width: 20px;
+            height: 3px;
+            border-radius: 2px;
+        }
+
+        .canvas-wrapper {
+            flex: 1;
+            position: relative;
+            background: #0f1419;
+            min-height: 400px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        #canvas3d {
+            width: 100%;
+            height: 100%;
+            min-height: 400px;
+            display: block;
+            cursor: move;
+        }
+
+        .camera-controls {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            z-index: 10;
+        }
+
+        .control-btn {
+            width: 38px;
+            height: 38px;
+            background: rgba(10, 10, 10, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .control-btn:hover {
+            background: rgba(0, 212, 255, 0.3);
+            border-color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .control-btn.active {
+            background: rgba(0, 212, 255, 0.5);
+            border-color: var(--primary);
+        }
+
+        .view-controls {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            z-index: 10;
+        }
+
+        .mini-controls {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            background: rgba(10, 10, 10, 0.85);
+            padding: 0.5rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 10;
+        }
+
+        .mini-btn {
+            width: 38px;
+            height: 38px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .mini-btn:hover {
+            background: rgba(0, 212, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .mini-btn.play {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+        }
+
+        .info-overlay {
+            position: absolute;
+            bottom: 60px;
+            left: 1rem;
+            background: rgba(10, 10, 10, 0.9);
+            padding: 0.7rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.7rem;
+            max-width: 180px;
+            z-index: 5;
+        }
+
+        .info-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.4rem;
+            font-size: 0.75rem;
+        }
+
+        .stats-bar {
+            background: rgba(10, 10, 10, 0.95);
+            padding: 0.6rem 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .stat-box {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            margin-bottom: 0.2rem;
+        }
+
+        .stat-value {
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--gray);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 900px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .close-btn {
+            background: transparent;
+            border: none;
+            color: var(--white);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: var(--secondary);
+            transform: rotate(90deg);
+        }
+
+        .examples-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .example-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .example-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .example-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--white);
+        }
+
+        .example-category {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: var(--purple);
+            border-radius: 20px;
+            font-size: 0.7rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .example-desc {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            line-height: 1.4;
+        }
+
+        .code-reference {
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .code-ref-title {
+            color: var(--purple);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .code-ref-desc {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            line-height: 1.8;
+        }
+
+        .plane-selector {
+            position: absolute;
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.5rem;
+            background: rgba(10, 10, 10, 0.9);
+            padding: 0.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 20;
+        }
+
+        .plane-btn {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: var(--white);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .plane-btn:hover {
+            background: rgba(0, 212, 255, 0.2);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .plane-btn.active {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
+        }
+
+        .plane-icon {
+            font-size: 1rem;
+        }
+
+        .compensation-indicator {
+            position: absolute;
+            top: 5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(139, 92, 246, 0.9);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            display: none;
+            z-index: 15;
+        }
+
+        .compensation-indicator.active {
+            display: block;
+        }
+
+        @media (max-width: 1024px) {
+            body {
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+            
+            .main-container {
+                flex-direction: column;
+                height: auto;
+                min-height: auto;
+                overflow-x: hidden;
+                width: 100%;
+            }
+            
+            .editor-section {
+                width: 100%;
+                height: 50vh;
+                min-height: 400px;
+                max-height: 50vh;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+                border-right: none;
+            }
+            
+            .editor-area {
+                flex: 1;
+                overflow: hidden;
+                min-height: 200px;
+            }
+            
+            .viewer-section {
+                width: 100%;
+                height: auto;
+                min-height: 500px;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            }
+            
+            .canvas-wrapper {
+                min-height: 400px;
+                height: 400px;
+                width: 100%;
+                overflow: hidden;
+            }
+            
+            #canvas3d {
+                width: 100% !important;
+                height: 100% !important;
+                max-width: 100vw;
+            }
+
+            .stats-bar {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 0.4rem;
+                padding: 0.5rem;
+            }
+            
+            .stat-label {
+                font-size: 0.65rem;
+            }
+            
+            .stat-value {
+                font-size: 0.9rem;
+            }
+
+            .header-title {
+                order: 3;
+                width: 100%;
+                text-align: left;
+                font-size: 1rem;
+            }
+            
+            .header-content {
+                padding: 0.5rem 1rem;
+            }
+            
+            .view-controls {
+                left: 0.5rem;
+                top: 0.5rem;
+            }
+            
+            .camera-controls {
+                right: 0.5rem;
+                top: 0.5rem;
+            }
+            
+            .info-overlay {
+                display: none;
+            }
+            
+            .plane-selector {
+                top: 0.5rem;
+                bottom: auto;
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 0.3rem;
+            }
+            
+            .plane-btn {
+                padding: 0.4rem 0.7rem;
+                font-size: 0.7rem;
+            }
+            
+            .plane-icon {
+                font-size: 0.85rem;
+            }
+            
+            .mini-controls {
+                bottom: 0.5rem;
+                right: 0.5rem;
+                padding: 0.4rem;
+            }
+            
+            .control-btn {
+                width: 34px;
+                height: 34px;
+                font-size: 0.85rem;
+            }
+            
+            .mini-btn {
+                width: 34px;
+                height: 34px;
+                font-size: 0.85rem;
+            }
+            
+            .compensation-indicator {
+                top: 3.5rem;
+                font-size: 0.75rem;
+                padding: 0.4rem 0.8rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-title {
+                font-size: 0.9rem;
+            }
+            
+            .logo-rr {
+                font-size: 1.2rem;
+            }
+            
+            .logo-nome {
+                font-size: 1rem;
+            }
+            
+            .editor-section {
+                height: 45vh;
+                min-height: 350px;
+                max-height: 45vh;
+            }
+            
+            .viewer-section {
+                min-height: 450px;
+            }
+            
+            .canvas-wrapper {
+                min-height: 350px;
+                height: 350px;
+            }
+            
+            .stats-bar {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 0.3rem;
+                padding: 0.4rem;
+            }
+            
+            .stat-label {
+                font-size: 0.6rem;
+            }
+            
+            .stat-value {
+                font-size: 0.85rem;
+            }
+            
+            .plane-selector {
+                gap: 0.3rem;
+            }
+            
+            .plane-btn {
+                padding: 0.35rem 0.6rem;
+                font-size: 0.65rem;
+            }
+            
+            .toolbar-buttons {
+                gap: 0.4rem;
+            }
+            
+            .btn {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-title {
+                font-size: 0.8rem;
+            }
+            
+            .editor-section {
+                height: 40vh;
+                min-height: 300px;
+                max-height: 40vh;
+            }
+            
+            .canvas-wrapper {
+                min-height: 300px;
+                height: 300px;
+            }
+            
+            .viewer-section {
+                min-height: 400px;
+            }
+            
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.3rem;
+                padding: 0.3rem;
+            }
+            
+            .stat-label {
+                font-size: 0.55rem;
+            }
+            
+            .stat-value {
+                font-size: 0.8rem;
+            }
+            
+            .plane-btn {
+                padding: 0.3rem 0.5rem;
+                font-size: 0.6rem;
+            }
+            
+            .control-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 0.8rem;
+            }
+            
+            .mini-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="index.html" class="logo">
+                <span class="logo-rr">RR</span>
+                <span class="logo-nome">Rogerinho Ramos</span>
+            </a>
+            <div class="header-title">
+                <i class="fas fa-microchip"></i> Simulador CNC Profissional v3.0
+            </div>
+            <a href="index.html" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Voltar
+            </a>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="editor-section">
+            <div class="editor-toolbar">
+                <input 
+                    type="text" 
+                    id="programName" 
+                    class="program-name-input" 
+                    value="Novo Programa" 
+                    placeholder="Nome do programa"
+                >
+                
+                <div class="toolbar-buttons">
+                    <button class="btn btn-primary" onclick="newProgram()">
+                        <i class="fas fa-file"></i> Novo
+                    </button>
+                    <button class="btn btn-secondary" onclick="openExamples()">
+                        <i class="fas fa-folder-open"></i> Exemplos
+                    </button>
+                    <button class="btn btn-secondary" onclick="openCodeRef()">
+                        <i class="fas fa-book"></i> Códigos
+                    </button>
+                    <button class="btn btn-secondary" onclick="openVariables()">
+                        <i class="fas fa-hashtag"></i> Variáveis
+                    </button>
+                    <button class="btn btn-secondary" onclick="downloadProgram()">
+                        <i class="fas fa-save"></i> Salvar
+                    </button>
+                    <label class="btn btn-secondary" style="cursor: pointer; margin: 0;">
+                        <i class="fas fa-upload"></i> Abrir
+                        <input type="file" accept=".nc,.txt,.gcode" onchange="uploadFile(event)" style="display: none;">
+                    </label>
+                </div>
+
+                <div class="numbering-controls">
+                    <span style="color: var(--purple); font-size: 0.8rem; font-weight: 600;">
+                        <i class="fas fa-list-ol"></i> Numeração:
+                    </span>
+                    <input type="number" id="incrementInput" class="increment-input" value="10" min="1" max="1000">
+                    <button class="btn btn-secondary btn-small" onclick="addLineNumbers()">
+                        <i class="fas fa-plus"></i> Add
+                    </button>
+                    <button class="btn btn-secondary btn-small" onclick="removeLineNumbers()">
+                        <i class="fas fa-minus"></i> Remove
+                    </button>
+                </div>
+
+                <div class="dialect-buttons">
+                    <button class="btn-dialect active" onclick="setDialect('FANUC')" data-dialect="FANUC">FANUC</button>
+                    <button class="btn-dialect" onclick="setDialect('SIEMENS')" data-dialect="SIEMENS">Siemens</button>
+                    <button class="btn-dialect" onclick="setDialect('ISO')" data-dialect="ISO">ISO</button>
+                </div>
+            </div>
+
+            <div class="editor-area">
+                <div class="line-numbers" id="lineNumbers"></div>
+                <div class="code-editor-wrapper">
+                    <div class="code-highlight" id="codeHighlight"></div>
+                    <textarea 
+                        class="code-editor" 
+                        id="codeEditor"
+                        placeholder="Cole seu código G aqui..."
+                        spellcheck="false"
+                    ></textarea>
+                </div>
+            </div>
+
+            <div class="editor-controls">
+                <button class="btn btn-primary" onclick="runSimulation()" id="runBtn">
+                    <i class="fas fa-play"></i> Executar
+                </button>
+                <button class="btn btn-secondary" onclick="pauseSimulation()" id="pauseBtn" style="display: none;">
+                    <i class="fas fa-pause"></i> Pausar
+                </button>
+                <button class="btn btn-secondary" onclick="stepSimulation()">
+                    <i class="fas fa-step-forward"></i> Passo
+                </button>
+                <button class="btn btn-secondary" onclick="resetSimulation()">
+                    <i class="fas fa-redo"></i> Reset
+                </button>
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-left: auto;">
+                    <i class="fas fa-tachometer-alt" style="color: var(--primary);"></i>
+                    <input type="range" min="10" max="500" value="100" id="speedSlider" 
+                           oninput="updateSpeed(this.value)" 
+                           style="width: 100px; accent-color: var(--primary);">
+                    <span id="speedDisplay" style="min-width: 60px; color: var(--text-light); font-size: 0.85rem;">100ms</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="viewer-section">
+            <div class="viewer-header">
+                <div class="viewer-title">
+                    <i class="fas fa-cube"></i> Visualização 3D <span id="dialectDisplay">FANUC</span>
+                </div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-line" style="background: #ff3333; box-shadow: 0 0 8px #ff3333;"></div>
+                        <span>G00 Rápido</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-line" style="background: #00ff00; box-shadow: 0 0 8px #00ff00;"></div>
+                        <span>G01 Usinagem</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-line" style="background: #00ffff; box-shadow: 0 0 8px #00ffff;"></div>
+                        <span>G02/G03 Arcos</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="canvas-wrapper">
+                <canvas id="canvas3d"></canvas>
+                
+                <div class="plane-selector">
+                    <button class="plane-btn active" onclick="setPlane(17)" id="btnG17" title="Plano XY - Fresadora (Vista de Cima)">
+                        <span class="plane-icon">📐</span>
+                        <span>G17 XY</span>
+                    </button>
+                    <button class="plane-btn" onclick="setPlane(18)" id="btnG18" title="Plano ZX - Torno (Vista Lateral)">
+                        <span class="plane-icon">⚙️</span>
+                        <span>G18 ZX</span>
+                    </button>
+                </div>
+                
+                <div class="compensation-indicator" id="compensationIndicator">
+                    G40
+                </div>
+                
+                <div class="info-overlay">
+                    <div class="info-title">💡 Controles:</div>
+                    <div style="line-height: 1.6; font-size: 0.7rem;">
+                        🖱️ Girar: Arrastar<br>
+                        🔍 Zoom: Scroll<br>
+                        📏 <span id="distanceDisplay">120</span>mm<br>
+                        <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 0.3rem 0;">
+                        <strong>Atalhos:</strong><br>
+                        ⌨️ 1 = G17 XY<br>
+                        ⌨️ 2 = G18 ZX
+                    </div>
+                </div>
+                
+                <div class="view-controls">
+                    <button class="control-btn active" onclick="toggleTool()" id="btnTool" title="Mostrar/Ocultar Ferramenta">
+                        <i class="fas fa-wrench"></i>
+                    </button>
+                    <button class="control-btn active" onclick="toggleGrid()" id="btnGrid" title="Mostrar/Ocultar Grade">
+                        <i class="fas fa-grip-lines"></i>
+                    </button>
+                    <button class="control-btn active" onclick="toggleAxes()" id="btnAxes" title="Mostrar/Ocultar Eixos">
+                        <i class="fas fa-arrows-alt"></i>
+                    </button>
+                    <button class="control-btn active" onclick="toggleWorkpiece()" id="btnWorkpiece" title="Mostrar/Ocultar Peça">
+                        <i class="fas fa-cube"></i>
+                    </button>
+                    <button class="control-btn active" onclick="toggleTable()" id="btnTable" title="Mostrar/Ocultar Mesa">
+                        <i class="fas fa-square"></i>
+                    </button>
+                    <button class="control-btn" onclick="toggleDarkMode()" id="btnDarkMode" title="Alternar Tema Escuro/Claro">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+                
+                <div class="camera-controls">
+                    <button class="control-btn" onclick="zoomIn()" title="Zoom In">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <button class="control-btn" onclick="zoomOut()" title="Zoom Out">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <button class="control-btn" onclick="resetCamera()" title="Reset">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+
+                <div class="mini-controls">
+                    <button class="mini-btn play" onclick="runSimulation()" title="Executar">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button class="mini-btn" onclick="stepSimulation()" title="Passo">
+                        <i class="fas fa-step-forward"></i>
+                    </button>
+                    <button class="mini-btn" onclick="resetSimulation()" title="Reset">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="stats-bar">
+                <div class="stat-box">
+                    <div class="stat-label">X</div>
+                    <div class="stat-value" style="color: var(--primary);" id="posX">0.00</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Y</div>
+                    <div class="stat-value" style="color: var(--green);" id="posY">0.00</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Z</div>
+                    <div class="stat-value" style="color: var(--purple);" id="posZ">0.00</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">RPM</div>
+                    <div class="stat-value" style="color: var(--gold);" id="spindle">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Feed</div>
+                    <div class="stat-value" style="color: var(--accent);" id="feedRate">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Linha</div>
+                    <div class="stat-value" style="color: var(--white);" id="currentLine">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="examplesModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">📚 Exemplos</div>
+                <button class="close-btn" onclick="closeModal('examplesModal')">&times;</button>
+            </div>
+            <div id="examplesContent"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="codeRefModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">📖 Referência</div>
+                <button class="close-btn" onclick="closeModal('codeRefModal')">&times;</button>
+            </div>
+            <div id="codeRefContent"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="variablesModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">🔢 Variáveis</div>
+                <button class="close-btn" onclick="closeModal('variablesModal')">&times;</button>
+            </div>
+            <div id="variablesContent">
+                <p style="text-align: center; color: var(--text-light); padding: 2rem;">
+                    Execute um programa paramétrico para ver variáveis.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // === GLOBALS ===
+        let currentDialect = 'FANUC';
+        let scene, camera, renderer;
+        let cameraDistance = 120;
+        let cameraAngle = { theta: 45, phi: 45 };
+        let isDragging = false;
+        let lastMousePos = { x: 0, y: 0 };
+        let isRunning = false;
+        let currentLineIndex = 0;
+        let toolPathLines = [];
+        let variables = {};
+        let simulationSpeed = 100;
+        let isDarkMode = true;
+
+        let sceneObjects = {
+            tool: null,
+            grid: null,
+            axes: null,
+            workpiece: null,
+            table: null
+        };
+
+        const machineState = {
+            position: { x: 0, y: 0, z: 0 },
+            modalG: { motion: 0, plane: 17, distance: 90, compensation: 40, cycle: 0 },
+            feedRate: 0,
+            spindleSpeed: 0,
+            toolRadius: 5,
+            cycleParams: { R: 0, Z: 0, Q: 0, P: 0, F: 0 }
+        };
+
+        const examples = {
+            FANUC: [
+                {
+                    name: 'Quadrado',
+                    category: 'Básico',
+                    description: '50x50mm',
+                    code: '; Quadrado 50x50mm\nG54 G90 G21 G17\nM03 S1500\n\nG00 X-25 Y-25\nG00 Z5\nG01 Z-3 F100\nG01 X25 Y-25 F200\nG01 X25 Y25\nG01 X-25 Y25\nG01 X-25 Y-25\nG00 Z5\nG00 X0 Y0\n\nM05\nM30'
+                },
+                {
+                    name: 'Círculo G02',
+                    category: 'Básico',
+                    description: 'Círculo R25mm horário',
+                    code: '; Círculo R25mm\nG54 G90 G21 G17\nM03 S1800\n\nG00 X25 Y0\nG00 Z5\nG01 Z-2 F100\nG02 X25 Y0 I-25 J0 F150\nG00 Z5\nG00 X0 Y0\n\nM05\nM30'
+                },
+                {
+                    name: 'Círculo G03',
+                    category: 'Básico',
+                    description: 'Círculo R20mm anti-horário',
+                    code: '; Círculo Anti-horário\nG54 G90 G21 G17\nM03 S2000\n\nG00 X20 Y0\nG00 Z5\nG01 Z-2 F100\nG03 X20 Y0 I-20 J0 F150\nG00 Z5\nG00 X0 Y0\n\nM05\nM30'
+                },
+                {
+                    name: 'Furos em Círculo',
+                    category: 'Furação',
+                    description: '6 furos Ø8mm em Ø70mm',
+                    code: '; 6 Furos em Círculo\n; Ø8mm em Ø70mm (PCD)\nG54 G90 G21 G17\nM03 S2000\nG00 Z5\n\n; Furo 1 - 0°\nG00 X35 Y0\nG83 Z-15 R2 Q3 F80\n\n; Furo 2 - 60°\nG00 X17.5 Y30.31\nG83 Z-15 R2 Q3 F80\n\n; Furo 3 - 120°\nG00 X-17.5 Y30.31\nG83 Z-15 R2 Q3 F80\n\n; Furo 4 - 180°\nG00 X-35 Y0\nG83 Z-15 R2 Q3 F80\n\n; Furo 5 - 240°\nG00 X-17.5 Y-30.31\nG83 Z-15 R2 Q3 F80\n\n; Furo 6 - 300°\nG00 X17.5 Y-30.31\nG83 Z-15 R2 Q3 F80\n\nG80\nG00 Z50\nM05\nM30'
+                },
+                {
+                    name: 'Furo Oblongo',
+                    category: 'Furação',
+                    description: 'Rasgo 30x10mm',
+                    code: '; Furo Oblongo 30x10mm\nG54 G90 G21 G17\nM03 S1800\nG00 Z5\n\n; Centro-esquerda\nG00 X-10 Y0\nG81 Z-8 R2 F100\n\n; Interpolar rasgo\nG00 Z2\nG01 Z-8 F80\nG01 X10 Y0 F150\n\n; Centro-direita  \nG00 X10 Y0\nG81 Z-8 R2 F100\nG80\n\nG00 Z50\nM05\nM30'
+                },
+                {
+                    name: 'Rebaixo para Parafuso',
+                    category: 'Furação',
+                    description: 'M8 + rebaixo Ø14x4mm',
+                    code: '; Furo M8 + Rebaixo\n; Ø8.5mm prof 20mm\n; Rebaixo Ø14x4mm\nG54 G90 G21 G17\nM03 S2000\n\n; Rebaixo Ø14mm\nG00 X0 Y0 Z5\nG83 Z-4 R2 Q2 F100\nG80\n\n; Furo passante Ø8.5mm\nG83 Z-24 R2 Q3 F80\nG80\n\nG00 Z50\nM05\nM30'
+                },
+                {
+                    name: 'Bolsão Retangular',
+                    category: 'Fresamento',
+                    description: '40x30mm prof 5mm',
+                    code: '; Bolsão 40x30mm x 5mm prof\nG54 G90 G21 G17\nM03 S1500\nG00 X0 Y0 Z5\n\n; Desbaste Z-2mm\nG01 Z-2 F80\nG01 X15 Y10 F200\nG01 X-15 Y10\nG01 X-15 Y-10\nG01 X15 Y-10\nG01 X15 Y10\nG01 X10 Y5\nG01 X-10 Y5\nG01 X-10 Y-5\nG01 X10 Y-5\nG01 X10 Y5\n\n; Desbaste Z-4mm\nG01 Z-4 F80\nG01 X15 Y10 F200\nG01 X-15 Y10\nG01 X-15 Y-10\nG01 X15 Y-10\nG01 X15 Y10\n\n; Acabamento Z-5mm\nG01 Z-5 F80\nG01 X20 Y15 F150\nG01 X-20 Y15\nG01 X-20 Y-15\nG01 X20 Y-15\nG01 X20 Y15\n\nG00 Z5\nM05\nM30'
+                },
+                {
+                    name: 'Compensação G41/G42',
+                    category: 'Fresamento',
+                    description: 'Contorno com compensação',
+                    code: '; Compensação de Raio\nG54 G90 G21 G17\nM03 S1500\n\nG00 X-35 Y-35 Z5\nG01 Z-3 F100\n\n; Ativa G41 esquerda\nG41 D5\nG01 X-30 Y-30 F200\nG01 X30 Y-30\nG01 X30 Y30\nG01 X-30 Y30\nG01 X-30 Y-30\n\n; Desativa compensação\nG40\nG01 X-35 Y-35\n\nG00 Z5\nM05\nM30'
+                },
+                {
+                    name: 'Perfil com Arcos',
+                    category: 'Fresamento',
+                    description: 'Cantos arredondados R5',
+                    code: '; Perfil com Cantos R5\nG54 G90 G21 G17\nM03 S1500\n\nG00 X-25 Y-20 Z5\nG01 Z-3 F100\n\n; Lado inferior\nG01 X20 Y-20 F180\n\n; Canto inf direito\nG02 X25 Y-15 I0 J5\n\n; Lado direito\nG01 X25 Y15\n\n; Canto sup direito\nG02 X20 Y20 I-5 J0\n\n; Lado superior\nG01 X-20 Y20\n\n; Canto sup esquerdo\nG02 X-25 Y15 I0 J-5\n\n; Lado esquerdo\nG01 X-25 Y-15\n\n; Canto inf esquerdo\nG02 X-20 Y-20 I5 J0\n\nG00 Z5\nM05\nM30'
+                },
+                {
+                    name: 'Rosca G76 - Ciclo',
+                    category: 'Torno',
+                    description: 'M20x2.5 com G76',
+                    code: '; Rosca M20x2.5 - Ciclo G76\n; Plano G18 (ZX)\nG50 S2000\nG97 S800 M03\nG18\n\n; Aproximação\nG00 X24 Z5\nG00 Z2\n\n; Ciclo G76\n; P021060: 02 passes acab, recuo 1, ângulo 60°\n; Q100: prof mínima 0.1mm\n; R50: redução final 0.05mm\nG76 P021060 Q100 R50\n\n; X18.376: diâmetro final\n; Z-40: comprimento rosca\n; P1562: altura rosca 1.562mm\n; Q800: primeira penetração 0.8mm\n; F2.5: passo\nG76 X18.376 Z-40 P1562 Q800 F2.5\n\nG00 X50\nG00 Z50\nM05\nM30'
+                },
+                {
+                    name: 'Rosca G33 - Manual',
+                    category: 'Torno',
+                    description: 'M24x3 passo a passo',
+                    code: '; Rosca M24x3 - G33 Manual\nG50 S2000\nG97 S600 M03\nG18\n\nG00 X26 Z5\nG00 Z2\n\n; Passe 1 - 0.8mm\nG00 X22.4\nG33 Z-35 F3.0\nG00 X26\nG00 Z2\n\n; Passe 2 - 1.2mm\nG00 X21.6\nG33 Z-35 F3.0\nG00 X26\nG00 Z2\n\n; Passe 3 - 1.5mm\nG00 X21.0\nG33 Z-35 F3.0\nG00 X26\nG00 Z2\n\n; Passe 4 - Final Ø20.752\nG00 X20.752\nG33 Z-35 F3.0\nG00 X26\nG00 Z50\n\nM05\nM30'
+                },
+                {
+                    name: 'Perfil Externo',
+                    category: 'Torno',
+                    description: 'Ø25 e Ø20mm',
+                    code: '; Perfil Externo Escalonado\n; Ø25mm e Ø20mm\nG50 S3000\nG97 S1500 M03\nG18\n\nG00 X28 Z5\nG00 Z2\n\n; Desbaste Ø25mm\nG01 X25 Z2 F0.15\nG01 Z-30\nG00 X28\n\n; Desbaste Ø20mm\nG00 Z-28\nG01 X20 Z-30 F0.15\nG01 Z-50\nG00 X28\n\n; Acabamento Ø25\nG00 Z2\nG01 X25 F0.08\nG01 Z-30\n\n; Raio de concordância\nG01 X20 Z-32.5\n\n; Acabamento Ø20\nG01 Z-50\n\nG00 X50\nG00 Z50\nM05\nM30'
+                },
+                {
+                    name: 'Canal Retangular',
+                    category: 'Torno',
+                    description: '3mm x 4mm prof',
+                    code: '; Canal Retangular\n; 3mm largura x 4mm prof\nG50 S3000\nG97 S1500 M03\nG18\n\nG00 X30 Z5\nG00 X30 Z-15\n\n; Sangrias laterais\nG01 X24 F0.08\nG01 Z-15.5\nG01 X30\nG00 Z-15\n\nG01 X24\nG01 Z-18\nG01 X30\nG00 Z-15\n\n; Desbaste\nG00 X26\nG01 X22 Z-15 F0.05\nG01 Z-18\nG01 X26\n\nG00 X24\nG01 X22 Z-15\nG01 Z-18\nG01 X24\n\n; Acabamento fundo\nG01 X22 Z-15\nG01 Z-18\nG01 X24\n\n; Acabamento lateral direita\nG01 X22 Z-18\nG01 Z-15.5\nG01 X30\n\n; Acabamento lateral esquerda\nG00 Z-18\nG01 X22\nG01 Z-15\nG01 X30\n\nG00 X50\nG00 Z50\nM05\nM30'
+                },
+                {
+                    name: 'Garganta de Alívio',
+                    category: 'Torno',
+                    description: 'Para rosca M20',
+                    code: '; Garganta Alívio p/ Rosca\n; Para rosca M20x2.5\nG50 S3000\nG97 S1800 M03\nG18\n\nG00 X24 Z5\nG00 X24 Z-38\n\n; Sangria entrada\nG01 X19.5 F0.1\nG01 Z-38.5\nG01 X24\n\n; Garganta 3mm x Ø18\nG00 Z-39\nG01 X18 F0.08\nG01 Z-42\nG01 X24\n\n; Acabamento fundo\nG01 X18 Z-39 F0.05\nG01 Z-42\nG01 X19.5\n\n; Acabamento laterais\nG01 X18 Z-42\nG01 Z-38.5\nG01 X24\n\nG00 Z-42\nG01 X18\nG01 Z-39\nG01 X24\n\nG00 X50\nG00 Z50\nM05\nM30'
+                },
+                {
+                    name: 'Furo Interno + Rebaixo',
+                    category: 'Torno',
+                    description: 'Ø20mm + rebaixo Ø25',
+                    code: '; Furo Interno + Rebaixo\n; Ø20mm prof 40mm\n; Rebaixo Ø25mm x 5mm\nG50 S2500\nG97 S1200 M03\nG18\n\n; Furação prévia (simulação)\nG00 X0 Z5\nG01 Z-40 F0.15\nG00 Z5\n\n; Desbaste furo Ø20\nG00 X16 Z2\nG01 X20 Z0 F0.08\nG01 Z-38\nG00 X16\n\n; Rebaixo Ø25mm\nG00 Z-2\nG01 X25 Z-2 F0.08\nG01 Z-7\nG00 X16\n\n; Acabamento furo\nG00 Z0\nG01 X20 F0.05\nG01 Z-38\n\n; Acabamento rebaixo\nG01 Z-7\nG01 X25\nG01 Z-2\nG01 X20\n\nG00 X50\nG00 Z50\nM05\nM30'
+                },
+                {
+                    name: 'Loop WHILE',
+                    category: 'Paramétrico',
+                    description: 'Furos com incremento',
+                    code: '; Loop WHILE - 5 furos\n; X incrementado de 15mm\nG54 G90 G21 G17\nM03 S2000\n\n#1=0 (Contador)\n#2=-30 (Posição X inicial)\n\nWHILE [#1 LT 5] DO1\n  G00 X#2 Y0 Z5\n  G83 Z-10 R2 Q2 F100\n  G80\n  #1=#1+1\n  #2=#2+15\nEND1\n\nG00 Z50\nM05\nM30'
+                },
+                {
+                    name: 'Subprograma',
+                    category: 'Paramétrico',
+                    description: 'Furo chamado 4x',
+                    code: '; Programa Principal\nG54 G90 G21 G17\nM03 S2000\n\n; Chama furo em 4 posições\nG00 X-20 Y-20\nM98 P1000\n\nG00 X20 Y-20\nM98 P1000\n\nG00 X20 Y20\nM98 P1000\n\nG00 X-20 Y20\nM98 P1000\n\nG00 Z50\nM05\nM30\n\n; Subprograma O1000\nO1000\nG00 Z5\nG83 Z-12 R2 Q3 F80\nG80\nM99'
+                },
+                {
+                    name: 'Repetição de Perfil',
+                    category: 'Paramétrico',
+                    description: 'Quadrados concêntricos',
+                    code: '; Repetição de Perfil\n; 3 quadrados concêntricos\nG54 G90 G21 G17\nM03 S1500\n\n#1=10 (Tamanho inicial)\n#2=0 (Contador)\n\nWHILE [#2 LT 3] DO1\n  G00 X-#1 Y-#1 Z5\n  G01 Z-2 F100\n  \n  G01 X#1 Y-#1 F200\n  G01 X#1 Y#1\n  G01 X-#1 Y#1\n  G01 X-#1 Y-#1\n  \n  G00 Z5\n  #1=#1+8\n  #2=#2+1\nEND1\n\nG00 Z50\nM05\nM30'
+                }
+            ],
+            SIEMENS: [
+                {
+                    name: 'Retângulo',
+                    category: 'Básico',
+                    description: '60x40mm',
+                    code: '; Retângulo 60x40mm\nG54 G90 G71\nM3 S1500\n\nG0 X-30 Y-20 Z5\nG1 Z-2 F100\nG1 X30 F200\nG1 Y20\nG1 X-30\nG1 Y-20\nG0 Z5\n\nM5\nM30'
+                },
+                {
+                    name: 'Círculo',
+                    category: 'Básico',
+                    description: 'R15mm',
+                    code: '; Círculo Siemens\nG54 G90 G71\nM3 S1800\n\nG0 X15 Y0 Z5\nG1 Z-2 F100\nG2 X15 Y0 I-15 J0 F150\nG0 Z5\n\nM5\nM30'
+                },
+                {
+                    name: 'Bolsão Circular',
+                    category: 'Fresamento',
+                    description: 'Ø40mm prof 4mm',
+                    code: '; Bolsão Circular Siemens\n; Ø40mm x 4mm prof\nG54 G90 G71\nM3 S1500\n\nG0 X0 Y0 Z5\nG1 Z-2 F80\n\n; Espiral desbaste\nG1 X5 Y0 F150\nG3 X5 Y0 I-5 J0\nG1 X10 Y0\nG3 X10 Y0 I-10 J0\nG1 X15 Y0\nG3 X15 Y0 I-15 J0\n\n; Prof final\nG1 Z-4 F80\nG3 X15 Y0 I-15 J0 F150\n\n; Acabamento\nG1 X20 Y0\nG3 X20 Y0 I-20 J0\n\nG0 Z5\nM5\nM30'
+                },
+                {
+                    name: 'Furação Padrão',
+                    category: 'Furação',
+                    description: '4 furos Ø10mm',
+                    code: '; 4 Furos Padrão Siemens\nG54 G90 G71\nM3 S2000\n\nG0 X-20 Y-20 Z5\nCYCLE83(2, 0, 2, -12, 0, 0, 5, 100, 0, 1)\n\nG0 X20 Y-20\nCYCLE83()\n\nG0 X20 Y20\nCYCLE83()\n\nG0 X-20 Y20\nCYCLE83()\n\nG0 Z50\nM5\nM30'
+                }
+            ],
+            ISO: [
+                {
+                    name: 'Hexágono',
+                    category: 'Básico',
+                    description: '6 lados',
+                    code: '; Hexágono\nG54 G90 G21\nM03 S1500\n\nG00 X20 Y0 Z5\nG01 Z-2 F100\nG01 X10 Y17.3 F180\nG01 X-10 Y17.3\nG01 X-20 Y0\nG01 X-10 Y-17.3\nG01 X10 Y-17.3\nG01 X20 Y0\nG00 Z5\n\nM05\nM30'
+                },
+                {
+                    name: 'Círculo ISO',
+                    category: 'Básico',
+                    description: 'R30mm',
+                    code: '; Círculo ISO\nG54 G90 G21\nM03 S1800\n\nG00 X30 Y0 Z5\nG01 Z-2 F100\nG02 X30 Y0 I-30 J0 F150\nG00 Z5\n\nM05\nM30'
+                },
+                {
+                    name: 'Perfil Complexo',
+                    category: 'Fresamento',
+                    description: 'Retas e arcos',
+                    code: '; Perfil Complexo ISO\nG54 G90 G21\nM03 S1500\n\nG00 X-30 Y0 Z5\nG01 Z-3 F100\n\n; Lado esquerdo\nG01 X-30 Y20 F180\n\n; Arco superior esq\nG02 X-20 Y30 I10 J0\n\n; Topo\nG01 X20 Y30\n\n; Arco superior dir\nG02 X30 Y20 I0 J-10\n\n; Lado direito\nG01 X30 Y-20\n\n; Arco inferior dir\nG02 X20 Y-30 I-10 J0\n\n; Base\nG01 X-20 Y-30\n\n; Arco inferior esq\nG02 X-30 Y-20 I0 J10\n\n; Fecha\nG01 X-30 Y0\n\nG00 Z5\nM05\nM30'
+                },
+                {
+                    name: 'Gravação Texto',
+                    category: 'Fresamento',
+                    description: 'Letra "L" simples',
+                    code: '; Gravação Letra L\nG54 G90 G21\nM03 S3000\n\nG00 X0 Y0 Z5\nG01 Z-0.5 F50\n\n; Vertical\nG01 X0 Y15 F150\n\n; Horizontal\nG01 X0 Y0\nG01 X8 Y0\n\nG00 Z5\nM05\nM30'
+                }
+            ]
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            init3D();
+            loadExample('FANUC', 0);
+            updateLineNumbers();
+            updateSyntaxHighlighting();
+            
+            // Força o resize inicial
+            setTimeout(() => {
+                onResize();
+            }, 100);
+            
+            const editor = document.getElementById('codeEditor');
+            editor.addEventListener('input', () => {
+                updateLineNumbers();
+                updateSyntaxHighlighting();
+            });
+            
+            editor.addEventListener('scroll', () => {
+                document.getElementById('lineNumbers').scrollTop = editor.scrollTop;
+                document.getElementById('codeHighlight').scrollTop = editor.scrollTop;
+            });
+        });
+
+        function init3D() {
+            const canvas = document.getElementById('canvas3d');
+            const width = canvas.clientWidth;
+            const height = canvas.clientHeight;
+            
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0f1419);
+
+            camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+            updateCameraPosition();
+
+            renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+            renderer.setSize(width, height);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
+            directionalLight.position.set(50, 50, 50);
+            scene.add(directionalLight);
+
+            const gridHelper = new THREE.GridHelper(200, 20, 0x00d4ff, 0x334455);
+            scene.add(gridHelper);
+            sceneObjects.grid = gridHelper;
+
+            const axesHelper = new THREE.AxesHelper(60);
+            scene.add(axesHelper);
+            sceneObjects.axes = axesHelper;
+
+            const tableGeometry = new THREE.BoxGeometry(100, 2, 100);
+            const tableMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0x1a2332,
+                transparent: true,
+                opacity: 0.8
+            });
+            const table = new THREE.Mesh(tableGeometry, tableMaterial);
+            table.position.y = -1;
+            scene.add(table);
+            sceneObjects.table = table;
+
+            const workpieceGeometry = new THREE.BoxGeometry(80, 20, 80);
+            const workpieceMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0x334455,
+                transparent: true,
+                opacity: 0.25,
+                side: THREE.DoubleSide
+            });
+            const workpiece = new THREE.Mesh(workpieceGeometry, workpieceMaterial);
+            workpiece.position.y = 10;
+            scene.add(workpiece);
+            sceneObjects.workpiece = workpiece;
+
+            const toolGeometry = new THREE.ConeGeometry(2, 15, 8);
+            const toolMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0xfbbf24,
+                emissive: 0xfbbf24,
+                emissiveIntensity: 0.3
+            });
+            const tool = new THREE.Mesh(toolGeometry, toolMaterial);
+            tool.position.set(0, 30, 0);
+            tool.rotation.x = Math.PI;
+            tool.name = 'tool';
+            scene.add(tool);
+            sceneObjects.tool = tool;
+
+            canvas.addEventListener('mousedown', onMouseDown);
+            canvas.addEventListener('mousemove', onMouseMove);
+            canvas.addEventListener('mouseup', onMouseUp);
+            canvas.addEventListener('mouseleave', onMouseUp);
+            canvas.addEventListener('wheel', onWheel);
+
+            window.addEventListener('resize', onResize);
+            window.addEventListener('orientationchange', () => {
+                setTimeout(onResize, 100);
+            });
+
+            animate();
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+
+        function updateCameraPosition() {
+            const theta = cameraAngle.theta * Math.PI / 180;
+            const phi = cameraAngle.phi * Math.PI / 180;
+            
+            camera.position.x = cameraDistance * Math.sin(phi) * Math.cos(theta);
+            camera.position.y = cameraDistance * Math.cos(phi);
+            camera.position.z = cameraDistance * Math.sin(phi) * Math.sin(theta);
+            camera.lookAt(0, 0, 0);
+            
+            document.getElementById('distanceDisplay').textContent = cameraDistance.toFixed(0);
+        }
+
+        function onMouseDown(e) {
+            if (e.button === 0) {
+                isDragging = true;
+                lastMousePos = { x: e.clientX, y: e.clientY };
+            }
+        }
+
+        function onMouseMove(e) {
+            if (!isDragging) return;
+            
+            const deltaX = e.clientX - lastMousePos.x;
+            const deltaY = e.clientY - lastMousePos.y;
+            
+            cameraAngle.theta += deltaX * 0.5;
+            cameraAngle.phi = Math.max(5, Math.min(175, cameraAngle.phi + deltaY * 0.5));
+            
+            updateCameraPosition();
+            lastMousePos = { x: e.clientX, y: e.clientY };
+        }
+
+        function onMouseUp() {
+            isDragging = false;
+        }
+
+        function onWheel(e) {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? 10 : -10;
+            cameraDistance = Math.max(30, Math.min(300, cameraDistance + delta));
+            updateCameraPosition();
+        }
+
+        function onResize() {
+            const canvas = document.getElementById('canvas3d');
+            const width = canvas.clientWidth;
+            const height = canvas.clientHeight;
+            
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            renderer.setSize(width, height);
+        }
+
+        function zoomIn() {
+            cameraDistance = Math.max(30, cameraDistance - 20);
+            updateCameraPosition();
+        }
+
+        function zoomOut() {
+            cameraDistance = Math.min(300, cameraDistance + 20);
+            updateCameraPosition();
+        }
+
+        function resetCamera() {
+            cameraDistance = 120;
+            cameraAngle = { theta: 45, phi: 45 };
+            updateCameraPosition();
+        }
+
+        function setPlane(plane) {
+            // Atualiza o plano de trabalho
+            machineState.modalG.plane = plane;
+            
+            // Atualiza os botões visuais
+            document.querySelectorAll('.plane-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            if (plane === 17) {
+                document.getElementById('btnG17').classList.add('active');
+                // Vista de cima para fresadora (XY)
+                animateCamera({ theta: 0, phi: 10 }, 150);
+            } else if (plane === 18) {
+                document.getElementById('btnG18').classList.add('active');
+                // Vista lateral para torno (ZX)
+                animateCamera({ theta: 90, phi: 90 }, 150);
+            }
+        }
+
+        function animateCamera(targetAngle, targetDistance, duration = 500) {
+            const startAngle = { ...cameraAngle };
+            const startDistance = cameraDistance;
+            const startTime = Date.now();
+            
+            function animate() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Easing suave
+                const easeProgress = progress < 0.5 
+                    ? 2 * progress * progress 
+                    : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+                
+                cameraAngle.theta = startAngle.theta + (targetAngle.theta - startAngle.theta) * easeProgress;
+                cameraAngle.phi = startAngle.phi + (targetAngle.phi - startAngle.phi) * easeProgress;
+                cameraDistance = startDistance + (targetDistance - startDistance) * easeProgress;
+                
+                updateCameraPosition();
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                }
+            }
+            
+            animate();
+        }
+
+        function toggleTool() {
+            if (sceneObjects.tool) {
+                sceneObjects.tool.visible = !sceneObjects.tool.visible;
+                document.getElementById('btnTool').classList.toggle('active');
+            }
+        }
+
+        function toggleGrid() {
+            if (sceneObjects.grid) {
+                sceneObjects.grid.visible = !sceneObjects.grid.visible;
+                document.getElementById('btnGrid').classList.toggle('active');
+            }
+        }
+
+        function toggleAxes() {
+            if (sceneObjects.axes) {
+                sceneObjects.axes.visible = !sceneObjects.axes.visible;
+                document.getElementById('btnAxes').classList.toggle('active');
+            }
+        }
+
+        function toggleWorkpiece() {
+            if (sceneObjects.workpiece) {
+                sceneObjects.workpiece.visible = !sceneObjects.workpiece.visible;
+                document.getElementById('btnWorkpiece').classList.toggle('active');
+            }
+        }
+
+        function toggleTable() {
+            if (sceneObjects.table) {
+                sceneObjects.table.visible = !sceneObjects.table.visible;
+                document.getElementById('btnTable').classList.toggle('active');
+            }
+        }
+
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            const btn = document.getElementById('btnDarkMode');
+            
+            if (isDarkMode) {
+                scene.background = new THREE.Color(0x0f1419);
+                btn.innerHTML = '<i class="fas fa-moon"></i>';
+                btn.classList.remove('active');
+                
+                if (sceneObjects.workpiece) {
+                    sceneObjects.workpiece.material.color.setHex(0x334455);
+                    sceneObjects.workpiece.material.opacity = 0.25;
+                }
+                if (sceneObjects.table) {
+                    sceneObjects.table.material.color.setHex(0x1a2332);
+                }
+                if (sceneObjects.grid) {
+                    sceneObjects.grid.material.color.setHex(0x00d4ff);
+                }
+            } else {
+                scene.background = new THREE.Color(0xe8eef5);
+                btn.innerHTML = '<i class="fas fa-sun"></i>';
+                btn.classList.add('active');
+                
+                if (sceneObjects.workpiece) {
+                    sceneObjects.workpiece.material.color.setHex(0x94a3b8);
+                    sceneObjects.workpiece.material.opacity = 0.15;
+                }
+                if (sceneObjects.table) {
+                    sceneObjects.table.material.color.setHex(0x64748b);
+                }
+                if (sceneObjects.grid) {
+                    sceneObjects.grid.material.color.setHex(0x475569);
+                }
+            }
+        }
+
+        function highlightSyntax(code) {
+            const lines = code.split('\n');
+            return lines.map(line => {
+                let highlighted = line;
+                
+                highlighted = highlighted.replace(/(;.*$|\(.*?\))/g, '<span class="hl-comment">$1</span>');
+                highlighted = highlighted.replace(/\bG0+\b/gi, '<span class="hl-g00">$&</span>');
+                highlighted = highlighted.replace(/\bG0*1\b/gi, '<span class="hl-g01">$&</span>');
+                highlighted = highlighted.replace(/\bG0*[23]\b/gi, '<span class="hl-g02">$&</span>');
+                highlighted = highlighted.replace(/\bG33\b/gi, '<span class="hl-g33">$&</span>');
+                highlighted = highlighted.replace(/\bG76\b/gi, '<span class="hl-g76">$&</span>');
+                highlighted = highlighted.replace(/\bG\d+/gi, (match) => {
+                    if (!match.match(/G(0*[0123]|33|76)\b/i)) {
+                        return '<span class="hl-g-other">' + match + '</span>';
+                    }
+                    return match;
+                });
+                highlighted = highlighted.replace(/\bM\d+/gi, '<span class="hl-m">$&</span>');
+                highlighted = highlighted.replace(/\b([XYZIJKRFSPQD])(?=-?\d)/gi, '<span class="hl-letter">$1</span>');
+                highlighted = highlighted.replace(/(?<=[XYZIJKRFSPQD])-?\d+\.?\d*/gi, '<span class="hl-number">$&</span>');
+                
+                return highlighted;
+            }).join('\n');
+        }
+
+        function updateSyntaxHighlighting() {
+            const editor = document.getElementById('codeEditor');
+            const highlight = document.getElementById('codeHighlight');
+            highlight.innerHTML = highlightSyntax(editor.value);
+            highlight.scrollTop = editor.scrollTop;
+        }
+
+        function addLineNumbers() {
+            const editor = document.getElementById('codeEditor');
+            const increment = parseInt(document.getElementById('incrementInput').value) || 10;
+            const lines = editor.value.split('\n');
+            let lineNumber = increment;
+            
+            const numberedLines = lines.map(line => {
+                const trimmed = line.trim();
+                if (trimmed && !trimmed.startsWith(';') && !trimmed.startsWith('(') && !trimmed.match(/^N\d+/)) {
+                    const numbered = 'N' + lineNumber + ' ' + line;
+                    lineNumber += increment;
+                    return numbered;
+                }
+                return line;
+            });
+            
+            editor.value = numberedLines.join('\n');
+            updateLineNumbers();
+            updateSyntaxHighlighting();
+        }
+
+        function removeLineNumbers() {
+            const editor = document.getElementById('codeEditor');
+            const lines = editor.value.split('\n');
+            const unnumberedLines = lines.map(line => line.replace(/^N\d+\s*/, ''));
+            editor.value = unnumberedLines.join('\n');
+            updateLineNumbers();
+            updateSyntaxHighlighting();
+        }
+
+        function updateLineNumbers() {
+            const editor = document.getElementById('codeEditor');
+            const lineNumbers = document.getElementById('lineNumbers');
+            const lines = editor.value.split('\n');
+            
+            lineNumbers.innerHTML = lines.map((_, i) => {
+                const num = i + 1;
+                const activeClass = (i === currentLineIndex && isRunning) ? ' active' : '';
+                return `<div class="line-number${activeClass}">${num}</div>`;
+            }).join('');
+        }
+
+        function parseGCode(line) {
+            const words = {};
+            const matches = line.match(/([A-Z])-?\d+\.?\d*/gi) || [];
+            matches.forEach(match => {
+                const letter = match[0].toUpperCase();
+                const value = parseFloat(match.slice(1));
+                words[letter] = value;
+            });
+            return words;
+        }
+
+        function interpolateArc(startPos, endPos, center, isClockwise, plane, steps = 20) {
+            const points = [];
+            
+            let axis1, axis2, axis3;
+            if (plane === 17) {
+                axis1 = 'x'; axis2 = 'y'; axis3 = 'z';
+            } else if (plane === 18) {
+                axis1 = 'z'; axis2 = 'x'; axis3 = 'y';
+            } else {
+                axis1 = 'y'; axis2 = 'z'; axis3 = 'x';
+            }
+            
+            const start1 = startPos[axis1] - center[axis1];
+            const start2 = startPos[axis2] - center[axis2];
+            const end1 = endPos[axis1] - center[axis1];
+            const end2 = endPos[axis2] - center[axis2];
+            
+            const startAngle = Math.atan2(start2, start1);
+            let endAngle = Math.atan2(end2, end1);
+            
+            if (isClockwise) {
+                while (endAngle >= startAngle) endAngle -= 2 * Math.PI;
+            } else {
+                while (endAngle <= startAngle) endAngle += 2 * Math.PI;
+            }
+            
+            const radius = Math.sqrt(start1 * start1 + start2 * start2);
+            const deltaAngle = (endAngle - startAngle) / steps;
+            
+            for (let i = 0; i <= steps; i++) {
+                const angle = startAngle + deltaAngle * i;
+                const point = { ...startPos };
+                point[axis1] = center[axis1] + radius * Math.cos(angle);
+                point[axis2] = center[axis2] + radius * Math.sin(angle);
+                point[axis3] = startPos[axis3] + (endPos[axis3] - startPos[axis3]) * (i / steps);
+                points.push(point);
+            }
+            
+            return points;
+        }
+
+        function createToolPath(startPos, endPos, gCode) {
+            const points = [];
+            let color;
+            
+            console.log('createToolPath chamado com gCode:', gCode);
+            
+            if (gCode === 0) {
+                // G00 - Rápido - VERMELHO
+                color = 0xff3333;
+                points.push(
+                    new THREE.Vector3(startPos.x, startPos.z, startPos.y),
+                    new THREE.Vector3(endPos.x, endPos.z, endPos.y)
+                );
+            } else if (gCode === 1) {
+                // G01 - Usinagem - VERDE
+                color = 0x00ff00;
+                points.push(
+                    new THREE.Vector3(startPos.x, startPos.z, startPos.y),
+                    new THREE.Vector3(endPos.x, endPos.z, endPos.y)
+                );
+            } else if (gCode === 2 || gCode === 3) {
+                // G02/G03 - Arcos - CIANO
+                color = 0x00ffff;
+                if (Array.isArray(endPos)) {
+                    endPos.forEach(pos => {
+                        points.push(new THREE.Vector3(pos.x, pos.z, pos.y));
+                    });
+                } else {
+                    points.push(
+                        new THREE.Vector3(startPos.x, startPos.z, startPos.y),
+                        new THREE.Vector3(endPos.x, endPos.z, endPos.y)
+                    );
+                }
+            }
+            
+            if (points.length < 2) {
+                console.warn('Não há pontos suficientes para criar linha');
+                return null;
+            }
+            
+            const geometry = new THREE.BufferGeometry().setFromPoints(points);
+            const material = new THREE.LineBasicMaterial({ 
+                color: color, 
+                linewidth: 2,
+                transparent: false,
+                opacity: 1
+            });
+            const line = new THREE.Line(geometry, material);
+            
+            scene.add(line);
+            toolPathLines.push(line);
+            
+            console.log('Linha criada - gCode:', gCode, 'cor:', '#' + color.toString(16).padStart(6, '0'), 'pontos:', points.length);
+            
+            return line;
+        }
+
+        function executeLine(line) {
+            const words = parseGCode(line);
+            
+            if (words.G !== undefined) {
+                const g = words.G;
+                
+                if (g === 0 || g === 1 || g === 2 || g === 3) {
+                    machineState.modalG.motion = g;
+                } else if (g === 17 || g === 18 || g === 19) {
+                    machineState.modalG.plane = g;
+                    // Atualiza a UI quando detectar mudança de plano
+                    if (g === 17) {
+                        document.getElementById('btnG17').classList.add('active');
+                        document.getElementById('btnG18').classList.remove('active');
+                    } else if (g === 18) {
+                        document.getElementById('btnG18').classList.add('active');
+                        document.getElementById('btnG17').classList.remove('active');
+                    }
+                } else if (g === 90 || g === 91) {
+                    machineState.modalG.distance = g;
+                } else if (g === 40 || g === 41 || g === 42) {
+                    machineState.modalG.compensation = g;
+                    updateCompensationIndicator();
+                } else if (g === 80) {
+                    machineState.modalG.cycle = 0;
+                } else if (g >= 81 && g <= 89) {
+                    machineState.modalG.cycle = g;
+                }
+            }
+            
+            if (words.D !== undefined) {
+                machineState.toolRadius = words.D;
+                updateCompensationIndicator();
+            }
+            
+            if (words.F !== undefined) {
+                machineState.feedRate = words.F;
+                document.getElementById('feedRate').textContent = words.F.toFixed(0);
+            }
+            if (words.S !== undefined) {
+                machineState.spindleSpeed = words.S;
+                document.getElementById('spindle').textContent = words.S.toFixed(0);
+            }
+            
+            if (machineState.modalG.cycle > 0) {
+                executeDrillingCycle(words);
+                updateDisplay();
+                return;
+            }
+            
+            const hasMotion = words.X !== undefined || words.Y !== undefined || words.Z !== undefined;
+            if (hasMotion) {
+                const startPos = { ...machineState.position };
+                const targetPos = { ...machineState.position };
+                
+                if (machineState.modalG.distance === 90) {
+                    if (words.X !== undefined) targetPos.x = words.X;
+                    if (words.Y !== undefined) targetPos.y = words.Y;
+                    if (words.Z !== undefined) targetPos.z = words.Z;
+                } else {
+                    if (words.X !== undefined) targetPos.x += words.X;
+                    if (words.Y !== undefined) targetPos.y += words.Y;
+                    if (words.Z !== undefined) targetPos.z += words.Z;
+                }
+                
+                if (machineState.modalG.motion === 0 || machineState.modalG.motion === 1) {
+                    createToolPath(startPos, targetPos, machineState.modalG.motion);
+                } else if (machineState.modalG.motion === 2 || machineState.modalG.motion === 3) {
+                    const center = { ...startPos };
+                    const plane = machineState.modalG.plane;
+                    
+                    if (plane === 17) {
+                        if (words.I !== undefined) center.x += words.I;
+                        if (words.J !== undefined) center.y += words.J;
+                    } else if (plane === 18) {
+                        if (words.I !== undefined) center.z += words.I;
+                        if (words.K !== undefined) center.x += words.K;
+                    } else {
+                        if (words.J !== undefined) center.y += words.J;
+                        if (words.K !== undefined) center.z += words.K;
+                    }
+                    
+                    const isClockwise = (machineState.modalG.motion === 2);
+                    const arcPoints = interpolateArc(startPos, targetPos, center, isClockwise, plane);
+                    
+                    createToolPath(startPos, arcPoints, machineState.modalG.motion);
+                }
+                
+                machineState.position = targetPos;
+                updateDisplay();
+                updateToolPosition(targetPos);
+            }
+        }
+
+        function executeDrillingCycle(words) {
+            const params = machineState.cycleParams;
+            
+            if (words.R !== undefined) params.R = words.R;
+            if (words.Z !== undefined) params.Z = words.Z;
+            if (words.Q !== undefined) params.Q = words.Q;
+            if (words.F !== undefined) params.F = words.F;
+            
+            const currentPos = { ...machineState.position };
+            const holePos = {
+                x: words.X !== undefined ? words.X : currentPos.x,
+                y: words.Y !== undefined ? words.Y : currentPos.y,
+                z: currentPos.z
+            };
+            
+            if (words.X !== undefined || words.Y !== undefined) {
+                createToolPath(currentPos, { ...holePos, z: params.R }, 0);
+                machineState.position = { ...holePos, z: params.R };
+            }
+            
+            // Movimento de furação - DEVE SER VERDE (G01)
+            createToolPath({ ...holePos, z: params.R }, { ...holePos, z: params.Z }, 1);
+            // Retorno rápido - vermelho (G00)
+            createToolPath({ ...holePos, z: params.Z }, { ...holePos, z: params.R }, 0);
+            
+            machineState.position = { ...holePos, z: params.R };
+            updateToolPosition(machineState.position);
+        }
+
+        function updateToolPosition(pos) {
+            if (sceneObjects.tool) {
+                sceneObjects.tool.position.x = pos.x;
+                sceneObjects.tool.position.z = pos.y;
+                sceneObjects.tool.position.y = pos.z + 20;
+            }
+        }
+
+        function updateDisplay() {
+            document.getElementById('posX').textContent = machineState.position.x.toFixed(2);
+            document.getElementById('posY').textContent = machineState.position.y.toFixed(2);
+            document.getElementById('posZ').textContent = machineState.position.z.toFixed(2);
+        }
+
+        function updateCompensationIndicator() {
+            const indicator = document.getElementById('compensationIndicator');
+            const comp = machineState.modalG.compensation;
+            
+            if (comp === 40) {
+                indicator.textContent = 'G40';
+                indicator.style.background = 'rgba(100, 100, 100, 0.9)';
+                indicator.classList.remove('active');
+            } else if (comp === 41) {
+                indicator.textContent = 'G41 - R' + machineState.toolRadius + 'mm';
+                indicator.style.background = 'rgba(59, 130, 246, 0.9)';
+                indicator.classList.add('active');
+            } else if (comp === 42) {
+                indicator.textContent = 'G42 - R' + machineState.toolRadius + 'mm';
+                indicator.style.background = 'rgba(239, 68, 68, 0.9)';
+                indicator.classList.add('active');
+            }
+        }
+
+        function runSimulation() {
+            isRunning = true;
+            document.getElementById('runBtn').style.display = 'none';
+            document.getElementById('pauseBtn').style.display = 'inline-flex';
+            
+            const code = document.getElementById('codeEditor').value;
+            const lines = code.split('\n');
+            variables = {};
+            
+            simulateNextLine(lines);
+        }
+
+        function simulateNextLine(lines) {
+            if (!isRunning) return;
+            
+            while (currentLineIndex < lines.length) {
+                const line = lines[currentLineIndex].trim();
+                if (line && !line.startsWith(';') && !line.startsWith('(')) {
+                    break;
+                }
+                currentLineIndex++;
+            }
+            
+            if (currentLineIndex >= lines.length) {
+                pauseSimulation();
+                return;
+            }
+            
+            let line = lines[currentLineIndex];
+            
+            try {
+                if (line.match(/^#\d+=/)) {
+                    const match = line.match(/^#(\d+)=(.+)/);
+                    if (match) {
+                        const varNum = parseInt(match[1]);
+                        let expression = match[2].trim();
+                        expression = expression.replace(/#(\d+)/g, (m, num) => variables['#' + num] || 0);
+                        expression = expression.replace(/[\[\]]/g, '');
+                        const value = eval(expression);
+                        variables['#' + varNum] = value;
+                    }
+                } else {
+                    line = line.replace(/\[#(\d+)\]/g, (match, num) => variables['#' + num] || 0);
+                    executeLine(line);
+                }
+            } catch (error) {
+                console.error('Erro:', line, error);
+            }
+            
+            updateLineNumbers();
+            document.getElementById('currentLine').textContent = currentLineIndex + 1;
+            currentLineIndex++;
+            
+            setTimeout(() => simulateNextLine(lines), simulationSpeed);
+        }
+
+        function pauseSimulation() {
+            isRunning = false;
+            document.getElementById('runBtn').style.display = 'inline-flex';
+            document.getElementById('pauseBtn').style.display = 'none';
+        }
+
+        function stepSimulation() {
+            const code = document.getElementById('codeEditor').value;
+            const lines = code.split('\n');
+            
+            while (currentLineIndex < lines.length) {
+                const line = lines[currentLineIndex].trim();
+                if (line && !line.startsWith(';') && !line.startsWith('(')) {
+                    break;
+                }
+                currentLineIndex++;
+            }
+            
+            if (currentLineIndex >= lines.length) return;
+            
+            const line = lines[currentLineIndex];
+            
+            try {
+                executeLine(line);
+            } catch (error) {
+                console.error('Erro:', line, error);
+            }
+            
+            updateLineNumbers();
+            document.getElementById('currentLine').textContent = currentLineIndex + 1;
+            currentLineIndex++;
+        }
+
+        function updateSpeed(value) {
+            simulationSpeed = 510 - parseInt(value);
+            document.getElementById('speedDisplay').textContent = simulationSpeed + 'ms';
+        }
+
+        function resetSimulation() {
+            pauseSimulation();
+            currentLineIndex = 0;
+            variables = {};
+            
+            machineState.position = { x: 0, y: 0, z: 0 };
+            machineState.modalG = { motion: 0, plane: 17, distance: 90, compensation: 40, cycle: 0 };
+            machineState.feedRate = 0;
+            machineState.spindleSpeed = 0;
+            machineState.toolRadius = 5;
+            
+            // Reseta UI dos planos
+            document.getElementById('btnG17').classList.add('active');
+            document.getElementById('btnG18').classList.remove('active');
+            
+            document.getElementById('posX').textContent = '0.00';
+            document.getElementById('posY').textContent = '0.00';
+            document.getElementById('posZ').textContent = '0.00';
+            document.getElementById('spindle').textContent = '0';
+            document.getElementById('feedRate').textContent = '0';
+            document.getElementById('currentLine').textContent = '0';
+            
+            updateLineNumbers();
+            updateCompensationIndicator();
+            
+            toolPathLines.forEach(line => scene.remove(line));
+            toolPathLines = [];
+            
+            if (sceneObjects.tool) {
+                sceneObjects.tool.position.set(0, 30, 0);
+            }
+            
+            document.getElementById('speedSlider').value = 100;
+            updateSpeed(100);
+        }
+
+        function setDialect(dialect) {
+            currentDialect = dialect;
+            document.getElementById('dialectDisplay').textContent = dialect;
+            
+            document.querySelectorAll('.btn-dialect').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.dialect === dialect) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        function testCircle() {
+            resetSimulation();
+            document.getElementById('codeEditor').value = '; Teste Completo de Cores\n; Verde=Usinagem, Vermelho=Rápido, Ciano=Arco\nG54 G90 G21 G17\nM03 S1800\n\n; Círculo G02\nG00 X30 Y0 Z5\nG01 Z-2 F100\nG02 X30 Y0 I-30 J0 F150\nG00 Z5\n\n; Círculo G03\nG00 X-30 Y0\nG01 Z-2 F100\nG03 X-30 Y0 I30 J0 F150\nG00 Z5\n\n; Furação\nG00 X0 Y0\nG83 Z-8 R2 Q2 F80\nG80\n\nG00 Z50\nM05\nM30';
+            document.getElementById('programName').value = 'Teste Cores';
+            updateLineNumbers();
+            updateSyntaxHighlighting();
+            
+            setTimeout(() => {
+                runSimulation();
+            }, 500);
+        }
+
+        function openExamples() {
+            const modal = document.getElementById('examplesModal');
+            const content = document.getElementById('examplesContent');
+            
+            let html = '';
+            Object.entries(examples).forEach(([dialect, exs]) => {
+                html += `<h3 style="color: var(--primary); margin: 1.5rem 0 1rem 0;">${dialect}</h3><div class="examples-grid">`;
+                
+                exs.forEach((example, idx) => {
+                    html += `
+                        <div class="example-card" onclick="loadExample('${dialect}', ${idx})">
+                            <div class="example-category">${example.category}</div>
+                            <div class="example-title">${example.name}</div>
+                            <div class="example-desc">${example.description}</div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+            });
+            
+            content.innerHTML = html;
+            modal.classList.add('active');
+        }
+
+        function loadExample(dialect, index) {
+            const example = examples[dialect][index];
+            if (example) {
+                document.getElementById('codeEditor').value = example.code;
+                document.getElementById('programName').value = example.name;
+                setDialect(dialect);
+                updateLineNumbers();
+                updateSyntaxHighlighting();
+                closeModal('examplesModal');
+                resetSimulation();
+            }
+        }
+
+        function openCodeRef() {
+            const modal = document.getElementById('codeRefModal');
+            const content = document.getElementById('codeRefContent');
+            
+            content.innerHTML = `
+                <div class="code-reference">
+                    <div class="code-ref-title">Códigos G:</div>
+                    <div class="code-ref-desc">
+                        <strong style="color: #ff0000;">G00</strong> - Movimento rápido<br>
+                        <strong style="color: #00ff00;">G01</strong> - Interpolação linear<br>
+                        <strong style="color: #00bfff;">G02/G03</strong> - Arcos<br>
+                        <strong style="color: var(--gold);">G04</strong> - Pausa<br>
+                        <strong style="color: var(--purple);">G17/G18/G19</strong> - Planos<br>
+                        <strong style="color: var(--green);">G54-G59</strong> - Coordenadas<br>
+                        <strong style="color: var(--secondary);">G90/G91</strong> - Absoluto/Incremental
+                    </div>
+                </div>
+
+                <div class="code-reference">
+                    <div class="code-ref-title">Compensação:</div>
+                    <div class="code-ref-desc">
+                        <strong>G40</strong> - Cancelar<br>
+                        <strong>G41</strong> - Esquerda (D)<br>
+                        <strong>G42</strong> - Direita (D)
+                    </div>
+                </div>
+
+                <div class="code-reference">
+                    <div class="code-ref-title">Ciclos Fixos:</div>
+                    <div class="code-ref-desc">
+                        <strong>G81</strong> - Furação simples<br>
+                        <strong>G83</strong> - Furação profunda (Q)<br>
+                        <strong>G80</strong> - Cancelar ciclo<br><br>
+                        <strong>R</strong> - Plano retorno<br>
+                        <strong>Z</strong> - Profundidade<br>
+                        <strong>Q</strong> - Incremento
+                    </div>
+                </div>
+
+                <div class="code-reference">
+                    <div class="code-ref-title">Códigos M:</div>
+                    <div class="code-ref-desc">
+                        <strong>M03/M04</strong> - Liga spindle<br>
+                        <strong>M05</strong> - Desliga spindle<br>
+                        <strong>M06</strong> - Troca ferramenta<br>
+                        <strong>M08/M09</strong> - Refrigeração<br>
+                        <strong>M30</strong> - Fim de programa
+                    </div>
+                </div>
+            `;
+            
+            modal.classList.add('active');
+        }
+
+        function openVariables() {
+            const modal = document.getElementById('variablesModal');
+            const content = document.getElementById('variablesContent');
+            
+            if (Object.keys(variables).length === 0) {
+                content.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 2rem;">Execute um programa paramétrico.</p>';
+            } else {
+                let html = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem;">';
+                Object.entries(variables).forEach(([key, value]) => {
+                    html += `
+                        <div style="background: rgba(139, 92, 246, 0.1); padding: 1rem; border-radius: 10px; text-align: center; border: 2px solid rgba(139, 92, 246, 0.3);">
+                            <div style="color: var(--purple); font-weight: bold; margin-bottom: 0.5rem; font-family: 'Courier New', monospace;">${key}</div>
+                            <div style="color: var(--primary); font-size: 1.3rem; font-weight: bold;">${value.toFixed(3)}</div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                content.innerHTML = html;
+            }
+            
+            modal.classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function newProgram() {
+            if (document.getElementById('codeEditor').value.trim() !== '') {
+                if (!confirm('Deseja criar um novo programa? O programa atual será perdido se não for salvo.')) {
+                    return;
+                }
+            }
+            
+            document.getElementById('codeEditor').value = '; Novo Programa\nG54 G90 G21 G17\nM03 S1500\n\n\n\nM05\nM30';
+            document.getElementById('programName').value = 'Novo Programa';
+            updateLineNumbers();
+            updateSyntaxHighlighting();
+            resetSimulation();
+        }
+
+        function downloadProgram() {
+            const code = document.getElementById('codeEditor').value;
+            const name = document.getElementById('programName').value;
+            const blob = new Blob([code], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${name.replace(/\s+/g, '_')}.nc`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function uploadFile(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('codeEditor').value = e.target.result;
+                    document.getElementById('programName').value = file.name.replace(/\.(nc|txt|gcode)$/, '');
+                    updateLineNumbers();
+                    updateSyntaxHighlighting();
+                    resetSimulation();
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                downloadProgram();
+            } else if (e.key === 'F5') {
+                e.preventDefault();
+                runSimulation();
+            } else if (e.key === 'Escape') {
+                if (isRunning) pauseSimulation();
+                document.querySelectorAll('.modal').forEach(modal => modal.classList.remove('active'));
+            } else if (e.key === '1' && !e.ctrlKey && !e.altKey) {
+                // Atalho: tecla 1 = G17 (XY)
+                const editor = document.getElementById('codeEditor');
+                if (document.activeElement !== editor) {
+                    setPlane(17);
+                }
+            } else if (e.key === '2' && !e.ctrlKey && !e.altKey) {
+                // Atalho: tecla 2 = G18 (ZX)
+                const editor = document.getElementById('codeEditor');
+                if (document.activeElement !== editor) {
+                    setPlane(18);
+                }
+            }
+        });
+    </script>
+
+    <script>
+        // Quando embutida no site (iframe), oculta o cabeçalho próprio
+        if (window.self !== window.top) {
+            var h = document.querySelector('header, .header');
+            if (h) h.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

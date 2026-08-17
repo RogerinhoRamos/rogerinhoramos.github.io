@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Videoteca | Rogerinho Ramos</title>
+    <!-- Google Analytics 4: substitua G-XXXXXXXXXX pelo ID da sua propriedade -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX');
+    </script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%2300d4ff'/><stop offset='1' stop-color='%238b5cf6'/></linearGradient></defs><rect width='100' height='100' rx='20' fill='url(%23g)'/><text x='50' y='68' font-size='50' font-weight='bold' text-anchor='middle' fill='white' font-family='Arial'>RR</text></svg>">
+    <meta name="description" content="Videoteca completa de Rogerinho Ramos: programação CNC, tecnologia, investimentos e espiritualidade. Assista aos vídeos do canal diretamente no site.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00d4ff;
+            --secondary: #ff6b35;
+            --accent: #4ecdc4;
+            --purple: #8b5cf6;
+            --green: #10b981;
+            --gold: #fbbf24;
+            --dark: #0a0a0a;
+            --gray: #1a1a1a;
+            --light-gray: #2a2a2a;
+            --text-light: #b0b0b0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark);
+            color: white;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: var(--gray); }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border-radius: 5px;
+        }
+
+        /* ===== Header ===== */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+        }
+
+        .logo-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: white;
+        }
+
+        .logo-text {
+            font-family: 'Brush Script MT', 'Segoe Script', cursive;
+            font-size: 1.6rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+        }
+
+        /* ===== Hero ===== */
+        .hero {
+            min-height: 45vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            padding: 8rem 2rem 3rem;
+            background: linear-gradient(135deg, var(--dark) 0%, var(--gray) 100%);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 50%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(255, 107, 53, 0.1) 0%, transparent 50%);
+        }
+
+        .hero-content { position: relative; z-index: 1; max-width: 900px; }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.15rem;
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero .channel-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.8rem 1.8rem;
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: white;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .hero .channel-btn:hover {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border-color: transparent;
+            transform: translateY(-3px);
+        }
+
+        /* ===== Toolbar (filtros + busca) ===== */
+        .toolbar {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 2rem 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .filter-btn {
+            padding: 0.6rem 1.2rem;
+            background: var(--light-gray);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-btn:hover { transform: translateY(-2px); border-color: var(--primary); }
+
+        .filter-btn.active {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border-color: transparent;
+        }
+
+        .filter-btn .count {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.1rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 0 1 320px;
+            min-width: 220px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.7rem 1rem 0.7rem 2.6rem;
+            background: var(--light-gray);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-box input::placeholder { color: var(--text-light); }
+        .search-box input:focus { border-color: var(--primary); }
+
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+
+        /* ===== Grid de vídeos ===== */
+        .video-section {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .result-info {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .video-card {
+            background: var(--gray);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+            border-color: var(--primary);
+        }
+
+        .video-thumb {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%;
+            overflow: hidden;
+            background: var(--light-gray);
+        }
+
+        .video-thumb img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .video-card:hover .video-thumb img { transform: scale(1.05); }
+
+        .thumb-fallback {
+            position: absolute;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--gray), var(--light-gray));
+            color: var(--primary);
+            font-size: 2.5rem;
+        }
+
+        .video-thumb.no-thumb img { display: none; }
+        .video-thumb.no-thumb .thumb-fallback { display: flex; }
+
+        .thumb-play {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.25);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .video-card:hover .thumb-play { opacity: 1; }
+
+        .thumb-play span {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: white;
+        }
+
+        .video-info {
+            padding: 1rem 1.2rem 1.2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            flex: 1;
+        }
+
+        .video-info h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            line-height: 1.4;
+            flex: 1;
+        }
+
+        .video-badge {
+            align-self: flex-start;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0.25rem 0.7rem;
+            border-radius: 12px;
+        }
+
+        .badge-cnc { background: rgba(0, 212, 255, 0.15); color: var(--primary); }
+        .badge-tech { background: rgba(139, 92, 246, 0.15); color: var(--purple); }
+        .badge-invest { background: rgba(16, 185, 129, 0.15); color: var(--green); }
+        .badge-spirit { background: rgba(251, 191, 36, 0.15); color: var(--gold); }
+
+        .video-tag {
+            position: absolute;
+            top: 0.6rem;
+            left: 0.6rem;
+            z-index: 2;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.3rem 0.7rem;
+            border-radius: 999px;
+            color: #1d1607;
+            background: linear-gradient(135deg, var(--gold), var(--secondary));
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+        }
+
+        .video-tag.tag-andamento {
+            background: linear-gradient(135deg, var(--secondary), #f97316);
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 1rem;
+            color: var(--text-light);
+        }
+
+        .empty-state i { font-size: 3rem; margin-bottom: 1rem; display: block; color: var(--light-gray); }
+
+        /* ===== Modal do player ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .modal.open { display: flex; }
+
+        .modal-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        .modal-content {
+            position: relative;
+            width: 100%;
+            max-width: 960px;
+            background: var(--gray);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1;
+        }
+
+        .modal-frame {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%;
+        }
+
+        .modal-frame iframe {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .modal-info {
+            padding: 1rem 1.5rem 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .modal-info h3 { font-size: 1.05rem; }
+
+        .modal-info a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .modal-info a:hover { text-decoration: underline; }
+
+        .modal-close {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            z-index: 2;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover { background: linear-gradient(45deg, var(--primary), var(--secondary)); }
+
+        /* ===== Rodapé ===== */
+        footer {
+            background: var(--gray);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            padding: 2.5rem 2rem;
+            margin-top: 3rem;
+        }
+
+        footer p { color: var(--text-light); font-size: 0.9rem; }
+
+        footer .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        footer .footer-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        footer .footer-links a:hover { color: var(--primary); }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero h1 { font-size: 2.2rem; }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .search-box { flex: 1 1 auto; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">
+                <div class="logo-img">RR</div>
+                <div class="logo-text">Rogerinho Ramos</div>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Início</a></li>
+                <li><a href="index.html#vision">Visão</a></li>
+                <li><a href="index.html#ecosystems">Ecossistemas</a></li>
+                <li><a href="index.html#projects">Projetos</a></li>
+                <li><a href="index.html#contact">Contato</a></li>
+                <li><a href="videoteca.html" class="active">Videoteca</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1><i class="fas fa-circle-play"></i> Videoteca</h1>
+            <p>Todos os vídeos do canal reunidos e organizados pelos ecossistemas do site:
+               CNC &amp; Usinagem, Tecnologia &amp; Inovação, Investimentos e Espiritualidade Redentiva.</p>
+            <a href="https://www.youtube.com/@rogerinhoramos" target="_blank" rel="noopener" class="channel-btn">
+                <i class="fab fa-youtube"></i> Visite o canal no YouTube
+            </a>
+        </div>
+    </section>
+
+    <div class="toolbar">
+        <div class="filters" id="filters"></div>
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Buscar vídeo... ex.: rosca, chaveta, VBA" autocomplete="off">
+        </div>
+    </div>
+
+    <section class="video-section">
+        <p class="result-info" id="resultInfo"></p>
+        <div class="video-grid" id="videoGrid"></div>
+        <div class="empty-state" id="emptyState" style="display:none;">
+            <i class="fas fa-video-slash"></i>
+            <p>Nenhum vídeo encontrado com esse termo. Tente outra busca.</p>
+        </div>
+    </section>
+
+    <!-- Modal do player -->
+    <div class="modal" id="videoModal" role="dialog" aria-modal="true">
+        <div class="modal-backdrop" onclick="closeModal()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()" aria-label="Fechar"><i class="fas fa-times"></i></button>
+            <div class="modal-frame">
+                <iframe id="modalIframe" src="" title="Player de vídeo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <div class="modal-info">
+                <h3 id="modalTitle"></h3>
+                <a id="modalLink" href="#" target="_blank" rel="noopener">Assistir no YouTube <i class="fas fa-external-link-alt"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-links">
+            <a href="index.html">Voltar ao site</a>
+            <a href="https://www.youtube.com/@rogerinhoramos" target="_blank" rel="noopener">YouTube</a>
+            <a href="https://www.youtube.com/playlist?list=PLH1qveNkEryyGlXs6B2NrcsLSY94yoOQn" target="_blank" rel="noopener">Playlist CNC</a>
+        </div>
+        <p>&copy; 2026 Rogério Costa Ramos (Rogerinho). Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        // ===== Dados dos vídeos =====
+        const CATEGORIES = {
+            cnc:    { label: 'CNC & Usinagem',        icon: 'fa-cogs',        badge: 'badge-cnc' },
+            tech:   { label: 'Tecnologia & Inovação', icon: 'fa-laptop-code', badge: 'badge-tech' },
+            invest: { label: 'Investimentos',         icon: 'fa-chart-line',  badge: 'badge-invest' },
+            spirit: { label: 'Espiritualidade',       icon: 'fa-cross',       badge: 'badge-spirit' }
+        };
+
+        const TAGS = {
+            novo:      { label: 'Novo',        icon: 'fa-bolt', cls: '' },
+            andamento: { label: 'Em andamento', icon: 'fa-code', cls: 'tag-andamento' }
+        };
+
+        const VIDEOS = [
+            // --- CNC & Usinagem (playlist "Meus programas CNC Simulações") ---
+            { id: '3p66-jQfzXQ', title: 'CNC na PRÁTICA #1 Interpolação Circular com Repeat', cat: 'cnc' },
+            { id: 'kq50lKWBT_I', title: 'CNC na PRÁTICA #2 Interpolando furo oblongado', cat: 'cnc' },
+            { id: 'qnhXXAR-5dk', title: 'CNC na Prática Conexão tubo flexível Sinumerik', cat: 'cnc' },
+            { id: '1OGigrpVNMw', title: 'Perfil de Chaveta com Ciclo Parametrizado Fanuc', cat: 'cnc' },
+            { id: 'XbVwdj85UfU', title: 'Rasgo de chaveta programa parametrizado Fanuc', cat: 'cnc' },
+            { id: '8VPB3Z6SZlU', title: 'Interpolar Rosca Cônica e Perfil Interno Cônico Parametrizado', cat: 'cnc' },
+            { id: 'yWnLG6RXhJ0', title: 'Interpolar Rosca Externa e Interna Siemens', cat: 'cnc' },
+            { id: 'jwhK8CmLgMs', title: 'Interpolar rosca com pente no torno CNC', cat: 'cnc' },
+            { id: '4GZ5mGWjNOk', title: 'Interpolar furo oblongado no Torno CNC', cat: 'cnc' },
+            { id: 'yEjMSa0wpe8', title: 'Interpolar rasgo no Torno CNC', cat: 'cnc' },
+            { id: '_-vG3DDypCw', title: 'Interpolar Elipse com Programação Parametrizada Macro', cat: 'cnc' },
+            { id: '5nvh6OttA7E', title: 'Espiral na Face', cat: 'cnc' },
+            { id: 'AVOI44IEqWI', title: 'Ciclo Parametrizado Triplo Sextavado Quadrado e Chato', cat: 'cnc' },
+            { id: 'ClCtg1HCvdk', title: 'Fresando Cone Interno Programa Parametrizado', cat: 'cnc' },
+            { id: 'gc05znFaiKE', title: 'Desbaste de perfil simulador SinuTrain Sinumerik', cat: 'cnc' },
+            { id: 'SyniPpKqUeQ', title: 'Buscar programas usinagem', cat: 'cnc' },
+            { id: '6Khbrw8IRPQ', title: 'Linux CNC template Touch Screen', cat: 'cnc' },
+            { id: 'd4qcq4pmeHk', title: 'Linux CNC GMOCCAPY e NGCGUI programa parametrizado', cat: 'cnc' },
+            { id: 'ZzR7M3-xPtM', title: 'Instalando controlador CNC OpenSource', cat: 'cnc' },
+            { id: '0kmUG5xtEdU', title: 'Planilha Apoio Gestão Usinagem com DashBoard dinâmico', cat: 'cnc' },
+            { id: 'Bx0lb1mIJMs', title: 'Tábua de corte Mundo da Usinagem', cat: 'cnc' },
+            { id: 'CKKd5s3KEZc', title: 'Tábua de corte São-Paulino Ciclista', cat: 'cnc' },
+            { id: 'PSIP9TV8FO4', title: 'Tábua de Corte Palmeiras', cat: 'cnc' },
+            { id: 'WL-j6H432dE', title: 'Placa comemorativa', cat: 'cnc' },
+            { id: '23sGSL7GGJo', title: 'Plantão Férias Final de Ano', cat: 'cnc' },
+            // --- Tecnologia & Inovação ---
+            { id: 'J8QqrqzMfjw', title: 'Integração SAP EXCEL VBA Sistema MES e DASHBOARD', cat: 'tech' },
+            { id: 'L1QRRIOxRDg', title: 'Automatizar Rotinas SAP EXCEL Scripting VBA', cat: 'tech' },
+            { id: 'dFphXSk-GNg', title: 'VBA EXCEL relatórios PDF Monitor Sistema MES', cat: 'tech' },
+            { id: 'BGp_icaLR28', title: 'Planilha Controle EATEOVIN', cat: 'tech' },
+            { id: '1ted-fx7DVo', title: 'Análise de Currículos Dinâmica JavaScript HTML', cat: 'tech' },
+            { id: 'NJ5PPKGCPzg', title: 'Projeto cadastro Acompanha Idoso', cat: 'tech' },
+            { id: 'SUXNFp8PtzE', title: 'Sistema para Supervisão de Frota - Fase 01 parte 1', cat: 'tech', tag: 'andamento' },
+            { id: 'dfg8ZvRB-GM', title: 'Sistema para Supervisão de Frota - Fase 01 parte 2', cat: 'tech', tag: 'andamento' },
+            // --- Investimentos ---
+            { id: 'cHwJnyj-5Vs', title: 'Renko XAUUSD Hull ZScore Trading System', cat: 'invest' },
+            // --- Espiritualidade Redentiva ---
+            { id: 'b2msJeTtVd4', title: 'Atendendo ao chamado de Deus... #short #fé #deus #jesus', cat: 'spirit' }
+        ];
+
+        // ===== Estado =====
+        let activeFilter = 'all';
+        let searchTerm = '';
+
+        const grid = document.getElementById('videoGrid');
+        const filtersEl = document.getElementById('filters');
+        const resultInfo = document.getElementById('resultInfo');
+        const emptyState = document.getElementById('emptyState');
+        const searchInput = document.getElementById('searchInput');
+
+        function normalize(str) {
+            return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        }
+
+        // ===== Filtros =====
+        function buildFilters() {
+            const counts = { all: VIDEOS.length };
+            for (const key of Object.keys(CATEGORIES)) {
+                counts[key] = VIDEOS.filter(v => v.cat === key).length;
+            }
+
+            const allBtn = document.createElement('button');
+            allBtn.className = 'filter-btn active';
+            allBtn.dataset.filter = 'all';
+            allBtn.innerHTML = '<i class="fas fa-border-all"></i> Todos <span class="count">' + counts.all + '</span>';
+            filtersEl.appendChild(allBtn);
+
+            for (const [key, cat] of Object.entries(CATEGORIES)) {
+                const btn = document.createElement('button');
+                btn.className = 'filter-btn';
+                btn.dataset.filter = key;
+                btn.innerHTML = '<i class="fas ' + cat.icon + '"></i> ' + cat.label + ' <span class="count">' + counts[key] + '</span>';
+                filtersEl.appendChild(btn);
+            }
+
+            filtersEl.addEventListener('click', (e) => {
+                const btn = e.target.closest('.filter-btn');
+                if (!btn) return;
+                activeFilter = btn.dataset.filter;
+                filtersEl.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                render();
+            });
+        }
+
+        // ===== Busca =====
+        searchInput.addEventListener('input', () => {
+            searchTerm = searchInput.value.trim();
+            render();
+        });
+
+        // ===== Renderização =====
+        function render() {
+            const term = normalize(searchTerm);
+            const filtered = VIDEOS.filter(v => {
+                const matchCat = activeFilter === 'all' || v.cat === activeFilter;
+                const matchTerm = !term || normalize(v.title).includes(term);
+                return matchCat && matchTerm;
+            });
+
+            grid.innerHTML = '';
+            emptyState.style.display = filtered.length === 0 ? 'block' : 'none';
+            resultInfo.textContent = filtered.length === VIDEOS.length
+                ? filtered.length + ' vídeos'
+                : filtered.length + ' de ' + VIDEOS.length + ' vídeos';
+
+            for (const video of filtered) {
+                const cat = CATEGORIES[video.cat];
+                const tag = video.tag ? TAGS[video.tag] : null;
+                const tagHtml = tag
+                    ? '<div class="video-tag ' + tag.cls + '"><i class="fas ' + tag.icon + '"></i> ' + tag.label + '</div>'
+                    : '';
+                const card = document.createElement('article');
+                card.className = 'video-card';
+                card.innerHTML =
+                    '<div class="video-thumb">' +
+                        tagHtml +
+                        '<img src="https://i.ytimg.com/vi/' + video.id + '/hqdefault.jpg" alt="' + video.title + '" loading="lazy" onerror="this.closest(\'.video-thumb\').classList.add(\'no-thumb\')">' +
+                        '<div class="thumb-fallback"><i class="fas fa-circle-play"></i></div>' +
+                        '<div class="thumb-play"><span><i class="fas fa-play"></i></span></div>' +
+                    '</div>' +
+                    '<div class="video-info">' +
+                        '<span class="video-badge ' + cat.badge + '"><i class="fas ' + cat.icon + '"></i> ' + cat.label + '</span>' +
+                        '<h3>' + video.title + '</h3>' +
+                    '</div>';
+                card.addEventListener('click', () => openModal(video));
+                grid.appendChild(card);
+            }
+        }
+
+        // ===== Modal =====
+        const modal = document.getElementById('videoModal');
+        const modalIframe = document.getElementById('modalIframe');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalLink = document.getElementById('modalLink');
+
+        function openModal(video) {
+            modalTitle.textContent = video.title;
+            modalLink.href = 'https://www.youtube.com/watch?v=' + video.id;
+            modalIframe.src = 'https://www.youtube.com/embed/' + video.id + '?autoplay=1&rel=0';
+            modal.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modal.classList.remove('open');
+            modalIframe.src = '';
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+        });
+
+        // ===== Inicialização =====
+        buildFilters();
+        render();
+    </script>
+
+    <script>
+        // Quando embutida no site (iframe), oculta cabeçalho/rodapé próprios
+        if (window.self !== window.top) {
+            var h = document.querySelector('header, .header');
+            if (h) h.style.display = 'none';
+            var f = document.querySelector('footer');
+            if (f) f.style.display = 'none';
+            var hero = document.querySelector('.hero');
+            if (hero) hero.style.paddingTop = '2rem';
+        }
+    </script>
+</body>
+</html>
