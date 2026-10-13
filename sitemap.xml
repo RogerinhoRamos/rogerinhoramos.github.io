@@ -36,4 +36,9 @@
         <changefreq>yearly</changefreq>
         <priority>0.6</priority>
     </url>
+    <url>
+        <loc>https://rogerinhoramos.com.br/devocionais/o-presente-que-nao-cabe-na-embalagem/</loc>
+        <changefreq>yearly</changefreq>
+        <priority>0.6</priority>
+    </url>
 </urlset>
