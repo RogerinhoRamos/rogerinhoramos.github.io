@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Compartilhar • O que há dentro de você?</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#e8f0e9;color:#263c37;font:17px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:560px;margin:0 auto;padding:22px 16px 50px}h1{font:400 30px/1.2 Georgia,serif;margin:6px 0 4px}.sub{color:#576c61;margin:0 0 18px}
+section{background:#fffef9;border:1px solid #cbdccf;border-top:3px solid #bed4c1;border-radius:16px;padding:18px;margin:16px 0}
+.rotulo{font-size:12px;letter-spacing:2px;font-weight:700;color:#1b6256}.dica{margin:6px 0 12px;color:#576c61;font-size:15px}
+img{display:block;width:100%;max-width:300px;margin:0 auto 14px;border-radius:14px;border:1px solid #cbdccf}
+pre{white-space:pre-wrap;word-break:break-word;background:#eef5ef;border-radius:12px;padding:14px;margin:0 0 12px;font:15px/1.55 system-ui,sans-serif}
+button,.botao{display:block;width:100%;min-height:50px;border:0;border-radius:12px;background:#1b6256;color:#fffef9;font:700 16px system-ui,sans-serif;text-align:center;text-decoration:none;line-height:50px;cursor:pointer}
+.botao.claro{background:#dcebdd;color:#1b6256;margin-top:10px}#aviso{text-align:center;color:#1b6256;font-weight:600;min-height:1.6em}
+</style></head><body><main>
+<div class="rotulo">COMPARTILHAR O DEVOCIONAL</div><h1>O que há dentro de você?</h1><p class="sub">Tudo pronto para postar pelo celular.</p><p id="aviso" role="status"></p>
+<section><div class="rotulo">1º STATUS — IMAGEM</div><p class="dica">Segure o dedo na imagem e escolha “Salvar” (ou toque no botão). Depois poste no status com a legenda abaixo.</p><img src="../status.png" alt="Imagem do status: O que há dentro de você?"><a class="botao" href="../status.png" download="status-o-que-ha-dentro-de-voce.png">Baixar a imagem</a></section>
+<section><div class="rotulo">LEGENDA DA IMAGEM</div><p class="dica">Cole como legenda da imagem no status.</p><pre id="legenda">📖 Devocional: O que há dentro de você?
+👉 O link para ler está no próximo status.</pre><button type="button" data-copiar="legenda">Copiar</button></section>
+<section><div class="rotulo">2º STATUS — TEXTO COM O LINK</div><p class="dica">Poste como status de texto, logo depois da imagem. Aqui o link fica clicável.</p><pre id="status">📖 *O que há dentro de você?*
+
+Aquilo que enche o coração transborda na vida.
+
+👇 *Toque no link abaixo* para ler o devocional completo:
+https://rogerinhoramos.com.br/devocionais/o-que-ha-dentro-de-voce/</pre><button type="button" data-copiar="status">Copiar</button></section>
+<section><div class="rotulo">CONVITE PARA GRUPOS E CONVERSAS</div><p class="dica">Mensagem completa, com o link.</p><pre id="convite">📖 *DEVOCIONAL | O QUE HÁ DENTRO DE VOCÊ?*
+
+Aquilo que enche o coração transborda na vida. Que esta reflexão nos ajude a levar nosso coração a Cristo e confiar em Sua graça transformadora. ❤️
+
+👉 Leia aqui: https://rogerinhoramos.com.br/devocionais/o-que-ha-dentro-de-voce/
+
+🙏 Se você for abençoado pela Palavra, compartilhe também com outras pessoas, para que elas sejam edificadas.
+
+*O Reino de Deus na dinâmica da vida.*
+
+Abraço fraterno,
+Pastor Rogerinho Ramos</pre><button type="button" data-copiar="convite">Copiar</button></section>
+<a class="botao claro" href="../">Abrir o devocional</a>
+</main><script>
+document.querySelectorAll('[data-copiar]').forEach(b=>b.onclick=async()=>{const t=document.getElementById(b.dataset.copiar).textContent,aviso=document.getElementById('aviso');try{await navigator.clipboard.writeText(t);b.textContent='Copiado ✓';aviso.textContent='Texto copiado. Agora é só colar no WhatsApp.'}catch(e){const r=document.createRange();r.selectNodeContents(document.getElementById(b.dataset.copiar));const s=getSelection();s.removeAllRanges();s.addRange(r);aviso.textContent='Texto selecionado: toque em Copiar.'}setTimeout(()=>b.textContent='Copiar',2500)});
+</script></body></html>
